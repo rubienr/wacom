@@ -1,5 +1,6 @@
-= Quickly setting relevant Wacom settings:
+# Quickly setting relevant Wacom settings
 
+    $ xsetwacom.sh -h
     Usage: xsetwacom.sh [OPTION ...] 
     
      Options:
@@ -14,7 +15,8 @@
       -p, --parameters    Print all device parameters.
 
 
-= Examples
+# Examples
+
     xsetwacom.sh -m p          # set mapping to primary monitor
     xsetwacom.sh -c 0 0 50 70  # set the pressure curve
     xsetwacom.sh -p            # print only supported parameters
