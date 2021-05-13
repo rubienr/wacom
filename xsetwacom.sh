@@ -1,243 +1,192 @@
-#!/bin/bash
+#!/bin/env bash
+
 SCRIPT_NAME="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
-#
-# Simple wacom setup: maps to primary screen
-#
+SCRIPT_PATH="$(dirname "$(test -L "$0" && readlink "$0" || echo "$0")")"
 
-#
-# section init
-#
-declare -A parameters
-declare -A pad_button_mapping
+source ${SCRIPT_PATH}/src/utils.sh
 
-PRIMARY_GEOMETRY=$(xrandr -q | grep --perl-regex --only-matching "(?<= connected primary )\s*[0-9x+]*")
-SECONDARY_GEOMETRY=$(xrandr -q | grep --perl-regex --only-matching "(?<= connected )\s*[0-9x+]*")
-WHOLE_GEOMETRY=$(xrandr -q | grep --perl-regex --only-matching "(?<= current )\s*[0-9x ]*\s*(?=, maximum )" | tr -d "\r\n " && echo -n "+0+0")
-DEVICE_IDS=$(xsetwacom --list devices | grep --perl-regex --only-matching "(?<=id: )\s*[0-9]*\s*(?=type:)" | tr "\n" " " | tr -d "\t\r")
-
-#
-# section default values
-#
+GEOMETRIES=($(get_geometries))
+SELECTED_GEOMETRY=${GEOMETRIES[0]}
+POINTER_MODE="Absolute"
+PRESSURE_CURVE="0 0 50 70"
+CONFIG_NAME=$(get_default_config_name)
+XSETWACOM_OLD_CFG=$(print_all_devices_parameters)
 
 
-parameters["MapToOutput"]=$PRIMARY_GEOMETRY
-parameters["Mode"]="Absolute"
-parameters["PressureCurve"]="0 0 50 70"
-
-# TODO rubienr - refactor that implementation
-declare -A pad_button_mapping_default
-pad_button_mapping_default["Button 1"]="11"
-pad_button_mapping_default["Button 2"]="12"
-pad_button_mapping_default["Button 3"]="13"
-pad_button_mapping_default["Button 8"]="14"
-
-declare -A pad_button_mapping_krita
-pad_button_mapping_krita["Button 1"]="key +b -b"
-pad_button_mapping_krita["Button 2"]="key +x -x"
-pad_button_mapping_krita["Button 3"]="key +altgr 8 key +altgr 8 key +altgr 8"
-pad_button_mapping_krita["Button 8"]="key +altgr 9 key +altgr 9 key +altgr 9"
-
-declare -A pad_button_mapping_gimp
-pad_button_mapping_gimp["Button 1"]="key p"
-pad_button_mapping_gimp["Button 2"]="key +x -x"
-pad_button_mapping_gimp["Button 3"]=""
-pad_button_mapping_gimp["Button 8"]=""
-
-declare -A pad_button_mapping
-for i in "${!pad_button_mapping_default[@]}" ; do
-    pad_button_mapping[$i]=${pad_button_mapping_default[$i]}
-done
-# TODO rubienr - refactor that implementation - end
-
-#
-# @params - none
-# @return - $?
-#
+# @input  ... none
+# @return ... $?
 function usage()
 {
+    local config_names=$(get_config_names | tr " " "|")    
     echo -en "\nUsage: $SCRIPT_NAME [OPTION ...] \n"
     echo -en "\n"
     echo -en " Options:\n"
-    echo -en "  -h, --help          Print this help.\n"
-    echo -en "  -m, --map [[p|primary] | [s|seconary] | [a|all]]\n"
+    echo -en "  --help              Print this help.\n"
+    echo -en "  --map [primary|seconary|whole]\n"
     echo -en "                      Map to primary secondary or all monitor(s) (as reported by xrandr).\n"
-    echo -en "                      Default: primary ($PRIMARY_GEOMETRY)\n"
-    echo -en "  -o, --mode          Absolute or Relative behaviour. Default: Absolute\n"
-    echo -en "  -c, --curve [x1 y1 x2 y2]\n"
+    echo -en "                      Current geometries are:\n"
+    echo -en "                        primary   = ${GEOMETRIES[1]}\n"
+    echo -en "                        secondary = ${GEOMETRIES[2]}\n"
+    echo -en "                        whole     = ${GEOMETRIES[0]}\n"
+    echo -en "                      Default: $SELECTED_GEOMETRY\n"
+    echo -en "  --mode              Absolute or Relative behaviour.\n"
+    echo -en "                      Default: Absolute\n"
+    echo -en "  --curve [x1 y1 x2 y2]\n"
     echo -en "                      Set the pressure curve (3rd oder Bezier)\n"
-    echo -en "                      Default: ${parameters[PressureCurve]}\n"
-    echo -en "  -b, --buttons [default | krita | gimp]\n"
-    echo -en "                      Idividual button mapping.\n"
-    echo -en "                      Default: default.\n"
-    echo -en "  -p, --parameters    Print all device parameters.\n"
+    echo -en "                      Default: ${ALL_PARAMETERS[PressureCurve]}\n"
+    echo -en "  --config [${config_names}]\n"
+    echo -en "                      Create your own configs in ./configs/.\n"
+    echo -en "                      Default: ${CONFIG_NAME}.\n"
+    echo -en "  --parameters        Print all device parameters and exit.\n"
     echo -en "\n\n"
 }
 
-#
-# @params - "$@"
-# @return - $?
-#
+
+# @input  ... "$@"
+# @return ... $?
 function parse_cli_args()
 {
-    while [[ $# -gt 0 ]]
-    do
-    key="$1"
-
-    case $key in
-        -h|--help)
-            usage
-            exit 0
-        ;;
-        -m|--map)
-            shift
-            if [ "xp" == "x$1" -o "xprimary" == "x$1" ] ; then
-                parameters["MapToOutput"]=$PRIMARY_GEOMETRY
-            elif [ "xs" == "x$1" -o "xsecondary" == "x$1" ] ; then
-                parameters["MapToOutput"]=$SECONDARY_GEOMETRY
-            elif [ "xa" == "x$1" -o "xall" == "x$1" ] ; then
-                parameters["MapToOutput"]=$WHOLE_GEOMETRY
-            else
+    local whole_geometry=${GEOMETRIES[0]}
+    local primary_geometry=${GEOMETRIES[1]}
+    local secondary_geometry=${GEOMETRIES[2]}
+    SELECTED_GEOMETRY=$primary_geometry
+        
+    while [[ $# -gt 0 ]] ; do
+        local key="$1"
+        
+        
+        case $key in
+            -h|--help)
+                try_load_config "$CONFIG_NAME"
                 usage
-                exit 1
-            fi
-            shift
-        ;;
-        -o|--mode)
-            parameters["Mode"]=$2
-            shift
-            shift
-        ;;
-        -c|--curve)
-            shift
-            if [ "x" != "x$1" ] ; then
-                parameters["PressureCurve"]=$1
+                exit 0
+            ;;
+            --map)
                 shift
-            fi
-        ;;
-        -b|--buttons)
-            shift
-            
-            if [ "xdefault" == "x$1" ] ; then
-                for i in "${!pad_button_mapping_default[@]}" ; do
-                    pad_button_mapping[$i]=${pad_button_mapping_default[$i]}
-                done
-            elif [ "xkrita" == "x$1" ] ; then
-                for i in "${!pad_button_mapping_krita[@]}" ; do
-                    pad_button_mapping[$i]=${pad_button_mapping_krita[$i]}
-                done
-            elif [ "xgimp" == "x$1" ] ; then
-                for i in "${!pad_button_mapping_gimp[@]}" ; do
-                    pad_button_mapping[$i]=${pad_button_mapping_gimp[$i]}
-                done
-            else
+                if [ "xprimary" == "x$1" ] ; then
+                    SELECTED_GEOMETRY=$primary_geometry
+                elif [ "xsecondary" == "x$1" ] ; then
+                    SELECTED_GEOMETRY=$secondary_geometry
+                elif [ "xwhole" == "x$1" ] ; then
+                    SELECTED_GEOMETRY=$whole_geometry
+                else
+                    usage
+                    exit 1
+                fi
+                shift
+            ;;
+            --mode)
+                POINTER_MODE=$2
+                shift
+                shift
+            ;;
+            --curve)
+                shift
+                if [ "x" != "x$1" ] ; then
+                    PRESSURE_CURVE=$1
+                    shift
+                fi
+            ;;
+            --config)
+                shift
+                if [ "x" != "x$1" ] ; then
+                    CONFIG_NAME=$1
+                    shift
+                fi
+            ;;
+            --parameters)
+                print_all_devices_parameters
+                exit 0
+            ;;
+            *)
+                try_load_config "$CONFIG_NAME"
                 usage
                 exit 1
-            fi
-
-            
-            shift
-        ;;
-        -p|--parameters)
-            print_parameters
-            exit 0
-        ;;
-        *)
-            usage
-            exit 1
-        ;;
-    esac
+            ;;
+        esac
     done
+    return 0
 }
 
-#
-# section impl
-#
 
-#
-# @params - none
-# @return - $?
-#
-function print_config()
+# @input $1 ... identation
+# @pre      ... config loaded
+# @stdout   ... logging
+# @return   ... $?
+function configure_devices()
 {
-    echo -en "\nCurrent configuration:\n"
-    for parameter in "${!parameters[@]}"
-    do
-      value=${parameters[$parameter]}
-      echo -en "\t$parameter:\n\t\t$value\n"
+    local identation=$1
+    local connected_device_ids=$(get_all_device_ids)
+
+    for device_id in $PAD_DEVICE_IDS ; do
+        echo "${identation}Configure pad device $device_id"
+        echo $connected_device_ids | grep $device_id > /dev/null 2>&1 \
+        && configure_device $device_id "PAD" "${identation}${identation}" \
+        || echo "${identation}Pad device $device_id not connected. Configuration skipped for $device_id."
     done
 
-    echo -en "\n\tPad buttons:\n"
-    for button in "${!pad_button_mapping[@]}" ; do
-        local value=${pad_button_mapping[$button]}
-        echo -en "\t\t$button -> \"$value\"\n"
+    for device_id in $STYLUS_DEVICE_IDS ; do
+        echo "${identation}Configure pen device $device_id"
+        echo $connected_device_ids | grep $device_id > /dev/null 2>&1 \
+        && configure_device $device_id "STYLUS" "${identation}${identation}" \
+        || echo "${identation}Stylus device $device_id not connected. Configuration skipped for $device_id."
+    done
+
+    for device_id in $ERASER_DEVICE_IDS ; do
+        echo "${identation}Configure eraser device $device_id"
+        echo $connected_device_ids | grep $device_id > /dev/null 2>&1\
+        && configure_device $device_id "ERASER" "${identation}${identation}" \
+        || echo "${identation}Eraser device $device_id not connected. Configuration skipped for $device_id."
     done
 }
 
-#
-# @params - none
-# @return - $?
-#
-function print_parameters()
+# @pre      ... config loaded
+# @stdout   ... logging
+# @input $1 ... device id
+# @input $2 ... device config prefix (PEN, BUTTON, ERASER)
+# @input $3 ... identation
+# @return   ... $?
+function configure_device()
 {
-    echo -en "\nCurrent device settings:\n"
-    for device in $DEVICE_IDS
-    do
-        echo -en "\nDevice $device parameters:\n"
-        xsetwacom --shell --get $device all 2>&1 | grep -v "does not exist"
+    local device_id=$1
+    local config_mappoing_prefix=$2
+    local identation=$3
+    local config_mappings=(
+        _PARAMETERS
+        _BUTTON_MAPPING
+    )
+    local config_mapping_name=""
+    
+    config_mapping_name="ALL_PARAMETERS"
+    echo "${identation}Configure device $device_id with $config_mapping_name"
+    # TODO
+    
+    for config_mapping_postfix in ${config_mappings[@]} ; do
+        config_mapping_name=$config_mappoing_prefix$config_mapping_postfix
+        echo "${identation}Configure device $device_id with $config_mapping_name"
+        # TODO
     done
 }
 
-#
-# TODO rubienr - refactor that implementation
-# 
-function set_button_mapping()
-{
-    local device=11 # todo
-    echo -en "\t- device $device\n"
-    for button in "${!pad_button_mapping[@]}" ; do
-        local value=${pad_button_mapping[$button]}
-        echo -en "\t\t$button -> \"$value\"\n"
-        xsetwacom --set $device $button $value 2>&1 | awk '{ print "\t\t\t" $0 }'
-    done
-}
 
-#
-# @params - none
-# @return - $?
-#
-function set_parameters()
-{
-    echo -en "\nSet parameters:\n"
-    for device in $DEVICE_IDS
-    do
-        echo -e "\t- device $device"
-        for parameter in "${!parameters[@]}"
-        do
-            #echo -e "\t\t- device &device"
-            value=${parameters[$parameter]}
-            echo -e "\t\t$parameter '$value'"
-            xsetwacom --set $device $parameter $value 2>&1 | awk '{ print "\t\t\t" $0 }'
-        done
-    done
-    set_button_mapping
-}
-
-#
-# @params - none
-# @return - $?
-#
+# @stdout   ... logging
+# @input $1 ... device id
+# @exit 1   ... on error
+# @return   ... $?
 function main() 
 {
-    parse_cli_args "$@"
-    print_config
-
-    if [ "x" == "x$DEVICE_IDS" ] ; then
-        echo -en "\nNo device found!\n"
-        exit 1
-    fi
-
-    set_parameters
-    print_parameters
+    # TODO: post_config: collect all vars for simpler pritn_loaded_config impl
+    # TODO: implement handling of: xbindkeys --file default-xbindkeys.dfg
+    
+    local identation="  "
+    parse_cli_args "$@" \
+    && exit_if_no_device_found && echo "Found devices:" && print_devices "$identation" \
+    && load_config "$CONFIG_NAME" \
+    && echo "Configuration \"$CONFIG_NAME\" loaded:" && print_loaded_config "  " \
+    && echo "Configure devices:" && configure_devices "$identation" \
+    && echo "Current device settings:" && print_all_devices_parameters "$identation" \
+    && echo "Device settings diff (old vs. new config):" \
+    && echo $(diff <(echo "$XSETWACOM_OLD_CFG") <(print_all_devices_parameters) && echo "xsetwacom reported no changes" ) | awk '{ print "  " $0 }'
 }
 
 main $@
