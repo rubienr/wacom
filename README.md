@@ -1,15 +1,21 @@
 # Yet another Wacom Tool
 
-Since the Ubuntu Wacom UI config behaves flaky I decided to do it on my
-own relying ony command line and xsetwacom.
+Since the Ubuntu Wacom UI config behaves flaky I decided to do it on my own, relying ony command line and xsetwacom.
+The script will not only work  Ubuntu.
+All it needs is
 
-## Non Aims
-* no GUI
-* probably not that user friendly
+* xsetwacom
+* optinally: xbindkeys
+* optionally: xdotool
 
 ## Aims
 * simple
 * stable
+* reliable
+
+## Non Aims
+* fancy GUI
+* autoconfig
 
 # Usage
 
