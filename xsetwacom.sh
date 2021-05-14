@@ -32,12 +32,13 @@ function usage()
     echo -en "  --config [${config_names}]\n"
     echo -en "                      If specified always let this argument be the 1st on command line. Create your own configs in ./configs/.\n"
     echo -en "                      Default: ${CONFIG_NAME}.\n"
-    echo -en "  --map [primary|seconary|whole]\n"
+    echo -en "  --map [primary|seconary|whole|next]\n"
     echo -en "                      Map device to primary, secondary or all monitor(s) (as reported by xrandr).\n"
     echo -en "                      Reported geometries are:\n"
     echo -en "                        primary   = ${GEOMETRIES[1]}\n"
     echo -en "                        secondary = ${GEOMETRIES[2]}\n"
     echo -en "                        whole     = ${GEOMETRIES[0]}\n"
+    echo -en "                        next      = next geometry (cycles through all geometries)\n"
     echo -en "                      Default: ${ALL_PARAMETERS[MapToOutput]}\n"
     echo -en "  --mode [Absolute|Relative]\n"
     echo -en "                      Absolute or relative pointer behaviour.\n"
@@ -76,10 +77,16 @@ function parse_cli_args()
                 shift
                 if [ "xprimary" == "x$1" ] ; then
                     ALL_PARAMETERS[MapToOutput]=${GEOMETRIES[1]}
+                    save_geometry "${ALL_PARAMETERS[MapToOutput]}"
                 elif [ "xsecondary" == "x$1" ] ; then
                     ALL_PARAMETERS[MapToOutput]=${GEOMETRIES[2]}
+                    save_geometry "${ALL_PARAMETERS[MapToOutput]}"
                 elif [ "xwhole" == "x$1" ] ; then
                     ALL_PARAMETERS[MapToOutput]=${GEOMETRIES[0]}
+                    save_geometry "${ALL_PARAMETERS[MapToOutput]}"
+                elif [ "xnext" == "x$1" ] ; then
+                    ALL_PARAMETERS[MapToOutput]=$(get_next_geometry "$(echo ${GEOMETRIES[@]})" "$(get_saved_geometry)")
+                    save_geometry "${ALL_PARAMETERS[MapToOutput]}"
                 else
                     usage
                     exit 1

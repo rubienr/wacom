@@ -172,6 +172,61 @@ function get_geometries()
 }
 
 
+# @stdout   ... next geometry
+# @input $1 ... array of known geometries
+# @input $2 ... current geometry (empty or unknown string falls back to 1st geometry)
+# @return   ... $0
+function get_next_geometry()
+{
+    local geometries=( $(echo "$1") )
+    local geo=( $(echo "$1") )
+    local current_geometry="$2"
+
+    # if geometry not found: fallback to first
+    
+    if [[ ! " ${geometries[@]} " =~ " ${current_geometry} " ]] ; then
+        echo "${geometries[0]}"
+        return 0
+    fi
+
+    # if geometry found: take next
+    geometries=( $(echo "${geometries[*]}" ) $(echo "${geometries[*]}" ))
+    for i in "${!geometries[@]}" ; do
+        if [ "x${geometries[$i]}" == "x$current_geometry" ] ; then
+            let i=$i+1
+            echo "${geometries[$i]}"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+
+# @stdout   ... noting
+# @input $1 ... string
+# @return   ... $?
+function save_geometry()
+{
+    local geometry="$1"
+    pushd $SCRIPT_PATH/configs > /dev/null 2>&1
+    echo "$geometry" > .geometry.tmp
+    popd > /dev/null 2>&1
+}
+
+
+# @stdout ... value
+# @input  ... nothing
+# @return ... $?
+function get_saved_geometry()
+{
+    local geometry="$1"
+    pushd $SCRIPT_PATH/configs > /dev/null 2>&1
+    cat .geometry.tmp
+    popd > /dev/null 2>&1
+}
+
+
 # ========================== section devices ==========================
 
 
