@@ -8,41 +8,61 @@
 # @return ... $?
 function get_config_names()
 {
-    pushd ./configs > /dev/null 2>&1
+    pushd $SCRIPT_PATH/configs > /dev/null 2>&1
     while read cfg_file ; do
         echo -en "$(echo "$cfg_file" | grep -v "baseconfig-" | cut --delimiter='-' --fields=1) "
-    done <<< "$(ls *xsetwacom.cfg)" |xargs
+    done <<< "$(ls *xsetwacom.cfg 2>&1)" |xargs
     popd > /dev/null 2>&1
 }
 
 
-# @stdout   ... nothing
-# @input $1 ... config name
-# @return   ... $?
-function try_load_config()
+## @stdout   ... nothing
+## @input $1 ... config name
+## @return   ... $?
+#function try_load_config()
+#{
+#    local config_name=$1
+#    local base_config_file=baseconfig-xsetwacom.cfg
+#    local config_file=${config_name}-xsetwacom.cfg
+#
+#    pushd $SCRIPT_PATH/configs > /dev/null 2>&1
+#    source $base_config_file
+#    source $config_file
+#    popd > /dev/null 2>&1
+#}
+
+
+# @stdout ... nothing
+# @input  ... nothing
+# @exit   ... 1 on error
+# @return ... $?
+function load_base_config()
 {
-    local config_name=$1
-    local base_config_file=baseconfig-xsetwacom.cfg
-    local config_file=${config_name}-xsetwacom.cfg
+    local config_file=baseconfig-xsetwacom.cfg
     
-    pushd ./configs > /dev/null 2>&1
-    source $base_config_file
-    source $config_file
+    pushd $SCRIPT_PATH/configs > /dev/null 2>&1
+    if ! source $config_file > /dev/null 2>&1 ; then
+        echo "Loading base configuration \"config_file\" failed."
+        exit 1
+    fi
     popd > /dev/null 2>&1
 }
 
+
 # @stdout   ... nothing
 # @input $1 ... config name
+# @exit     ... 1 on error
 # @return   ... $?
 function load_config()
 {
     local config_name=$1
-    local base_config_file=baseconfig-xsetwacom.cfg
     local config_file=${config_name}-xsetwacom.cfg
     
-    pushd ./configs > /dev/null 2>&1
-    source $base_config_file && source $config_file \
-    || echo "Loading configuration(s) \"$base_config_file\" and/or \"config_file\" failed."
+    pushd $SCRIPT_PATH/configs > /dev/null 2>&1
+    if ! source $config_file > /dev/null 2>&1 ; then
+        echo "Loading configuration \"config_file\" failed."
+        exit 1
+    fi
     popd > /dev/null 2>&1
 }
 
@@ -286,7 +306,7 @@ function exit_if_no_device_found()
 }
 
 
-# @pre ... XSETWACOM_PARAMS_OLD was updated
+# @pre    ... XSETWACOM_PARAMS_OLD was updated
 # @input  ... nothing
 # @stdout ... diff of XSETWACOM_PARAMS_OLD and print_all_devices_parameters
 # @return ... $?
@@ -297,6 +317,24 @@ function print_effective_changes()
 
     echo "$effective_changes" | awk -v idnt="$identation$identation" '{ print idnt""$0 }'
 }
+
+
+# @pre    ... device is connected
+# @input  ... nothing
+# @stdout ... all libwacom-list-local-devices lines containing "android mode"
+# @return ... 0
+function warn_if_device_in_android_mode()
+{
+    local devices=$(libwacom-list-local-devices | grep -i "android mode" | grep --perl-regex --only-matching "(?<==).*")
+
+    if [ -n "$devices" ] ; then
+        echo "Warning: found device(s) in android mode:"
+        echo "$devices" | awk -v idnt="  " '{ print idnt""idnt""$0 }'
+        echo
+    fi
+    return 0
+}
+
 
 # ======================== section key bindings ========================
 

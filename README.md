@@ -1,7 +1,7 @@
 # Yet another Wacom Tool
 
 Since the Ubuntu Wacom UI config behaves flaky I decided to do it on my own, relying only on command line and xsetwacom.
-The script will not only work  Ubuntu.
+The script will not only work  Ubuntu but most probably also on a stone-age CentOS.
 All it needs is
 
 * xsetwacom - mandatory
@@ -13,6 +13,7 @@ All it needs is
 * simple
 * stable
 * reliable
+* painless setup
 
 ## Non Aims
 * fancy GUI
@@ -20,7 +21,15 @@ All it needs is
 
 # Usage
 
+I tested this script on Ubuntu with Intuos BT M.
+If your device is connected by USB, the Intuos BT M needs to be switched to Descktop Mode.
+Wiht bluetooth it works out of the box.
+Plese consult the Notes section for information about the modes.
+
 ## Examples
+
+If your Intuos BT M device is connected by USB press the **leftmost + rightmost button simultaneously** until the white LED goes off and on agian (dim white).
+Probably this step is not necessary for other devices.
 
     xsetwacom.sh --config krita                    # configure device
     xsetwacom.sh --config krita --xbindkeys daemon # start key mapping: btn. 3 maps device to primary screen, btn. 4 to secondary
@@ -190,3 +199,39 @@ All it needs is
     $ ./xsetwacom.sh --config krita --xbindkeys daemon
     bind keys with ./configs/krita-xbindkeys.cfg (running in background)
     $ # you can safely close this shell
+
+# Notes
+
+## Intuos BT M
+
+This device can be connected in three ways:
+
+* by Bletooth (LED lights blue)
+* by USB
+  * in Desktop Mode (LED lights bright white)
+  * in Mobile Mode (LED lights dim white)
+
+To switch the Intuos BT M in between both USB modes press the **leftmost + rightmost buttons simultaneously** for about four seconds until the white LED goes off.
+For this the USB cable must be connected.
+Unfortunately this step is poorly propagated and the last mode is not preserved or the mode is not detected correctly.
+See: https://github.com/linuxwacom/xf86-input-wacom/wiki/Known-Issues#android-misdetect
+
+1. connected by Bluetooth
+
+    $ xsetwacom --list
+    Wacom Intuos BT M Pad pad               id: 10  type: PAD
+    Wacom Intuos BT M Pen stylus            id: 11  type: STYLUS
+
+2. connectede by USB - Mobile Mode (default)
+
+    $ xsetwacom --list
+    Wacom Co.,Ltd. Intuos BT M stylus       id: 10  type: STYLUS
+    Wacom Co.,Ltd. Intuos BT M eraser       id: 11  type: ERASER
+
+3. connected by USB - Desktop Mode
+
+    $ xsetwacom --list
+    Wacom Intuos BT M Pad pad               id: 10  type: PAD
+    Wacom Intuos BT M Pen stylus            id: 11  type: STYLUS
+    Wacom Intuos BT M Pen eraser            id: 17  type: ERASER
+    Wacom Intuos BT M Pen cursor            id: 18  type: CURSOR

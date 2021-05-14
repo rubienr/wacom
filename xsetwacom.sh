@@ -1,14 +1,14 @@
 #!/bin/env bash
+#set -x
 SCRIPT_NAME="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
 SCRIPT_PATH="$(dirname "$(test -L "$0" && readlink "$0" || echo "$0")")"
 
 source ${SCRIPT_PATH}/src/utils.sh
 XSETWACOM_PARAMS_OLD=$(print_all_devices_parameters)
-
-# default arguments until the config is loaded
 GEOMETRIES=($(get_geometries))
-SELECTED_GEOMETRY=${GEOMETRIES[0]}
 CONFIG_NAME=$(get_default_config_name)
+
+load_base_config
 
 # @input  ... none
 # @return ... $?
@@ -38,7 +38,7 @@ function usage()
     echo -en "                        primary   = ${GEOMETRIES[1]}\n"
     echo -en "                        secondary = ${GEOMETRIES[2]}\n"
     echo -en "                        whole     = ${GEOMETRIES[0]}\n"
-    echo -en "                      Default: $SELECTED_GEOMETRY\n"
+    echo -en "                      Default: ${ALL_PARAMETERS[MapToOutput]}\n"
     echo -en "  --mode [Absolute|Relative]\n"
     echo -en "                      Absolute or relative pointer behaviour.\n"
     echo -en "                      Default: ${ALL_PARAMETERS[Mode]}\n"
@@ -62,28 +62,24 @@ function usage()
 # @return ... $?
 function parse_cli_args()
 {
-    local whole_geometry=${GEOMETRIES[0]}
-    local primary_geometry=${GEOMETRIES[1]}
-    local secondary_geometry=${GEOMETRIES[2]}
-    SELECTED_GEOMETRY=$primary_geometry
-        
+    local is_config_loaded="false"
     while [[ $# -gt 0 ]] ; do
         local key="$1"
 
         case $key in
             -h|--help)
-                try_load_config "$CONFIG_NAME"
+                load_config "$CONFIG_NAME"
                 usage
                 exit 0
             ;;
             --map)
                 shift
                 if [ "xprimary" == "x$1" ] ; then
-                    SELECTED_GEOMETRY=$primary_geometry
+                    ALL_PARAMETERS[MapToOutput]=${GEOMETRIES[1]}
                 elif [ "xsecondary" == "x$1" ] ; then
-                    SELECTED_GEOMETRY=$secondary_geometry
+                    ALL_PARAMETERS[MapToOutput]=${GEOMETRIES[2]}
                 elif [ "xwhole" == "x$1" ] ; then
-                    SELECTED_GEOMETRY=$whole_geometry
+                    ALL_PARAMETERS[MapToOutput]=${GEOMETRIES[0]}
                 else
                     usage
                     exit 1
@@ -91,8 +87,13 @@ function parse_cli_args()
                 shift
             ;;
             --mode)
-                ALL_PARAMETERS+=([Mode]="$2")
                 shift
+                if [ "xAbsolute" == "x$1" -o "xRelative" == "x$1" ] ; then
+                    ALL_PARAMETERS+=([Mode]="$1")
+                else
+                    echo "Invalid --mode \"$1\"."
+                    exit 1
+                fi
                 shift
             ;;
             --curve)
@@ -106,8 +107,10 @@ function parse_cli_args()
                 shift
                 if [ "x" != "x$1" ] ; then
                     CONFIG_NAME="$1"
+                    is_config_loaded="true"
                     shift
                 fi
+                load_config "$CONFIG_NAME"
             ;;
             --parameters)
                 print_all_devices_parameters
@@ -119,7 +122,10 @@ function parse_cli_args()
                     CONFIG_NAME="$1"
                     shift
                 fi
-                try_load_config "$CONFIG_NAME"
+
+                if [ "xfalse" == "x$is_config_loaded" ] ; then
+                    load_config "$CONFIG_NAME"
+                fi
                 print_loaded_config
                 exit 0
             ;;
@@ -138,7 +144,9 @@ function parse_cli_args()
                 exit 0
             ;;
             *)
-                try_load_config "$CONFIG_NAME"
+                if [ "xfalse" == "x$is_config_loaded" ] ; then
+                    load_config "$CONFIG_NAME"
+                fi
                 usage
                 exit 1
             ;;
@@ -146,7 +154,6 @@ function parse_cli_args()
     done
     return 0
 }
-
 
 # @input $1 ... identation
 # @pre      ... config loaded
@@ -218,7 +225,8 @@ function main()
 {
     local identation="  "
     parse_cli_args "$@" \
-    && exit_if_no_device_found && echo "Found devices:" && print_devices "$identation" \
+    && exit_if_no_device_found && warn_if_device_in_android_mode \
+    && echo "Found devices:" && print_devices "$identation" \
     && load_config "$CONFIG_NAME" \
     && echo "Configuration \"$CONFIG_NAME\" loaded:" && print_loaded_config "  " \
     && echo "Configure devices: $(get_all_device_ids)" && configure_devices "$identation" \
