@@ -44,7 +44,7 @@ Probably this step is not necessary for other devices.
     xsetwacom.sh --parameters       # print supported parameters and exit
 
 ## Synopsis
-    $ ./xsetwacom.sh --help
+    $ xsetwacom.sh --help
     Usage: xsetwacom.sh [OPTION ...] 
     
     Without command line arguments the script loads the default conguration and applies the parameters to attached device(s).
@@ -62,13 +62,14 @@ Probably this step is not necessary for other devices.
       --config [default|gimp|krita|mypaint]
                           If specified always let this argument be the 1st on command line. Create your own configs in ./configs/.
                           Default: default.
-      --map [primary|seconary|whole]
+      --map [primary|seconary|whole|next]
                           Map device to primary, secondary or all monitor(s) (as reported by xrandr).
-                          Reported geometries are:
+                          xrandr reported geometries are:
                             primary   = 2048x1280+0+0
                             secondary = 2048x1280+2048+0
                             whole     = 4096x1280+0+0
-                          Default: 2048x1280+0+0
+                            next      = next geometry (cycles through all geometries)
+                          Default: 4096x1280+0+0
       --mode [Absolute|Relative]
                           Absolute or relative pointer behaviour.
                           Default: Absolute

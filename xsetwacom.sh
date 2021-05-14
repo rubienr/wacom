@@ -34,7 +34,7 @@ function usage()
     echo -en "                      Default: ${CONFIG_NAME}.\n"
     echo -en "  --map [primary|seconary|whole|next]\n"
     echo -en "                      Map device to primary, secondary or all monitor(s) (as reported by xrandr).\n"
-    echo -en "                      Reported geometries are:\n"
+    echo -en "                      xrandr reported geometries are:\n"
     echo -en "                        primary   = ${GEOMETRIES[1]}\n"
     echo -en "                        secondary = ${GEOMETRIES[2]}\n"
     echo -en "                        whole     = ${GEOMETRIES[0]}\n"
