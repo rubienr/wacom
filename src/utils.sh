@@ -405,12 +405,12 @@ function bind_keys()
 
     case $mode in
         daemon)
-            echo "bind keys with $SCRIPTPATH./configs/$XBINDKEYS_CFG_FILE (running in background)"
-            xbindkeys --file "$SCRIPTPATH./configs/$XBINDKEYS_CFG_FILE" > /dev/null 2>&1
+            echo "bind keys with $SCRIPT_PATH/configs/$XBINDKEYS_CFG_FILE (running in background)"
+            xbindkeys --file "$SCRIPT_PATH/configs/$XBINDKEYS_CFG_FILE" > /dev/null 2>&1
         ;;
         nodaemon)
-            echo "bind keys with $SCRIPTPATH./configs/$XBINDKEYS_CFG_FILE"
-            xbindkeys --file "$SCRIPTPATH./configs/$XBINDKEYS_CFG_FILE" --verbose --nodaemon
+            echo "bind keys with $SCRIPT_PATH/configs/$XBINDKEYS_CFG_FILE"
+            xbindkeys --file "$SCRIPT_PATH/configs/$XBINDKEYS_CFG_FILE" --verbose --nodaemon
         ;;
         kill)
             killall xbindkeys

@@ -6,7 +6,7 @@ All it needs is
 
 * xsetwacom - mandatory
 * xbindkeys - optional: only if you intend to map mouse events to scripts
-  * xdotool - optional: only if you intend to map mouse events to keyborard events
+  * xdotool - optional: only if you intend to map mouse events to keyboard events (without "xsetwacom set NN Button key ...")
 * xrandr - mandatory
 
 ## Aims

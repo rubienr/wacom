@@ -231,6 +231,7 @@ function configure_device()
 function main() 
 {
     local identation="  "
+    pushd "$SCRIPT_PATH" > /dev/null 2>&1
     parse_cli_args "$@" \
     && exit_if_no_device_found && warn_if_device_in_android_mode \
     && echo "Found devices:" && print_devices "$identation" \
@@ -239,6 +240,7 @@ function main()
     && echo "Configure devices: $(get_all_device_ids)" && configure_devices "$identation" \
     && echo "Current device settings:" && print_all_devices_parameters "$identation" \
     && echo "Device settings diff (old vs. new config):" && print_effective_changes
+    popd > /dev/null 2>&1
 }
 
 main $@
