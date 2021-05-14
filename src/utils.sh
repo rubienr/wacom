@@ -55,7 +55,6 @@ function get_default_config_name()
     echo ${config_names[0]}
 }
 
-
 # @stdout   ... the formatted associated array 
 # @input $1 ... associative array (variable name)
 # @input $2 ... indentation
@@ -255,25 +254,28 @@ function set_button_mapping()
 
 # @input $1 ... device id
 # @input $2 ... parameters mapping (config array name)
+# @input $3 ... identation
 # @stdout   ... xsetwacom output
 # @return   ... $?
 function set_device_parameters()
 {
     local device_id=$1
-    #local array_name=$2
+    local array_name=$2
     declare -n parameters=$2
     local identation=$3
 
-    #echo "$identation$array_name (${#aarray[@]})"
     for parameter in "${!parameters[@]}" ; do
-        local value=${buttons[$parameter]}
-        echo -e "$identation$parameter '$value'"
-        xsetwacom --set $device $parameter $value 2>&1 | awk '{ print "$identation$identation" $0 }'
+        local value=${parameters[$parameter]}
+        echo -e "$identation$parameter = \"$value\""
+        xsetwacom --set $device_id $parameter $value 2>&1 | awk -v idnt="$identation" '{ print idnt""idnt""$0 }'
     done
-    
 }
 
 
+# @input  ... nothing
+# @stdout ... log on exit, nothing otherwise
+# @exit   ... 1 on error
+# @return ... 0 otherwise
 function exit_if_no_device_found()
 {
     if [ "x" == "x$(get_all_device_ids)" ] ; then
@@ -281,4 +283,56 @@ function exit_if_no_device_found()
         exit 1
     fi
     return 0
+}
+
+
+# @pre ... XSETWACOM_PARAMS_OLD was updated
+# @input  ... nothing
+# @stdout ... diff of XSETWACOM_PARAMS_OLD and print_all_devices_parameters
+# @return ... $?
+function print_effective_changes()
+{
+    local xsewacom_params_new=$(print_all_devices_parameters)
+    local effective_changes=$(diff <(echo "$XSETWACOM_PARAMS_OLD") <(echo "$xsewacom_params_new") && echo "xsetwacom reported no changes" )
+
+    echo "$effective_changes" | awk -v idnt="$identation$identation" '{ print idnt""$0 }'
+}
+
+# ======================== section key bindings ========================
+
+
+# @pre      ... cofiguration is loaded
+# @input $1 ... start/stop mode: daemon, nodaemon, kill
+# @stdout   ... verbose device list
+# @exit     ... 1 on invalid input
+# @return   ... $?
+function bind_keys()
+{
+    local mode=$1
+
+    case $mode in
+        daemon)
+            echo "bind keys with $SCRIPTPATH./configs/$XBINDKEYS_CFG_FILE (running in background)"
+            xbindkeys --file "$SCRIPTPATH./configs/$XBINDKEYS_CFG_FILE" > /dev/null 2>&1
+        ;;
+        nodaemon)
+            echo "bind keys with $SCRIPTPATH./configs/$XBINDKEYS_CFG_FILE"
+            xbindkeys --file "$SCRIPTPATH./configs/$XBINDKEYS_CFG_FILE" --verbose --nodaemon
+        ;;
+        kill)
+            killall xbindkeys
+            instances=$(ps aux | grep xbindkeys | grep -Ev "grep|$SCRIPTNMAE")
+            if [ "x" != "x$instances" ] ; then
+                echo "Still instances found after stopping xbindkeys:"
+                echo "$instances"
+            fi
+        ;;
+        reload)
+            killall -HUP xbindkeys
+        ;;
+        *)
+        echo "Failed to manipulate xbindkeys in mode \"$mode\""
+        exit 1
+        ;;
+    esac
 }
