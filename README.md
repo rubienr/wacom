@@ -32,7 +32,9 @@ If your Intuos BT M device is connected by USB press the **leftmost + rightmost 
 Probably this step is not necessary for other devices.
 
     xsetwacom.sh --config krita                    # configure device
-    xsetwacom.sh --config krita --xbindkeys daemon # start key mapping: btn. 3 maps device to primary screen, btn. 4 to secondary
+    xsetwacom.sh --config krita --xbindkeys daemon # start key mapping in background: 
+                                                   #   button 3 maps device to primary screen
+                                                   #   button 4 maps device to secondary screen
 
     # other examples
     xsetwacom.sh                    # read all values from config and configure to device
