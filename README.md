@@ -234,20 +234,20 @@ See: https://github.com/linuxwacom/xf86-input-wacom/wiki/Known-Issues#android-mi
 
 1. connected by Bluetooth
 
-    $ xsetwacom --list
-    Wacom Intuos BT M Pad pad               id: 10  type: PAD
-    Wacom Intuos BT M Pen stylus            id: 11  type: STYLUS
+       $ xsetwacom --list
+       Wacom Intuos BT M Pad pad               id: 10  type: PAD
+       Wacom Intuos BT M Pen stylus            id: 11  type: STYLUS
 
 2. connectede by USB - Mobile Mode (default)
 
-    $ xsetwacom --list
-    Wacom Co.,Ltd. Intuos BT M stylus       id: 10  type: STYLUS
-    Wacom Co.,Ltd. Intuos BT M eraser       id: 11  type: ERASER
+       $ xsetwacom --list
+       Wacom Co.,Ltd. Intuos BT M stylus       id: 10  type: STYLUS
+       Wacom Co.,Ltd. Intuos BT M eraser       id: 11  type: ERASER
 
 3. connected by USB - Desktop Mode
 
-    $ xsetwacom --list
-    Wacom Intuos BT M Pad pad               id: 10  type: PAD
-    Wacom Intuos BT M Pen stylus            id: 11  type: STYLUS
-    Wacom Intuos BT M Pen eraser            id: 17  type: ERASER
-    Wacom Intuos BT M Pen cursor            id: 18  type: CURSOR
+       $ xsetwacom --list
+       Wacom Intuos BT M Pad pad               id: 10  type: PAD
+       Wacom Intuos BT M Pen stylus            id: 11  type: STYLUS
+       Wacom Intuos BT M Pen eraser            id: 17  type: ERASER
+       Wacom Intuos BT M Pen cursor            id: 18  type: CURSOR
