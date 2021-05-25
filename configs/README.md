@@ -1,14 +1,13 @@
 Config Naming
 
-    <configuration_name>-xsetwacom.cfg
-    <configuration_name>-xbindkeys.cfg # optional, fallback to default-xbindkeys.cfg
+    <configuration-name>_xsetwacom.cfg
 
-The <configuration_name> can be anything except default or baseconfig and must not contain -.
+The <configuration-name> can be anything except default or baseconfig and must not contain '_'.
 
 Examples
 
-    krita-xbindkeys.cfg
-    krita-xsetwacom.cfg
-
-    gimp-xsetwacom.cfg
-    # gimp-xbindkeys.cfg is missing -> fallback to default-xbindkeys.cfg
+    krita_xbindkeys.cfg
+    krita_xsetwacom.cfg # this cfg is mentioned in \*_xbindkeys.cfg
+    
+    app-devicename_xsetwacom.cfg
+    foo_xsetwacom.cfg

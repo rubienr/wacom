@@ -10,26 +10,10 @@ function get_config_names()
 {
     pushd $SCRIPT_PATH/configs > /dev/null 2>&1
     while read cfg_file ; do
-        echo -en "$(echo "$cfg_file" | grep -v "baseconfig-" | cut --delimiter='-' --fields=1) "
-    done <<< "$(ls *xsetwacom.cfg 2>&1)" |xargs
+        echo -en "$(echo "$cfg_file" | grep -v "baseconfig_" | cut --delimiter='_' --fields=1) "
+    done <<< "$(ls *_xsetwacom.cfg 2>&1)" |xargs
     popd > /dev/null 2>&1
 }
-
-
-## @stdout   ... nothing
-## @input $1 ... config name
-## @return   ... $?
-#function try_load_config()
-#{
-#    local config_name=$1
-#    local base_config_file=baseconfig-xsetwacom.cfg
-#    local config_file=${config_name}-xsetwacom.cfg
-#
-#    pushd $SCRIPT_PATH/configs > /dev/null 2>&1
-#    source $base_config_file
-#    source $config_file
-#    popd > /dev/null 2>&1
-#}
 
 
 # @stdout ... nothing
@@ -38,29 +22,29 @@ function get_config_names()
 # @return ... $?
 function load_base_config()
 {
-    local config_file=baseconfig-xsetwacom.cfg
+    local config_file="baseconfig_xsetwacom.cfg"
     
     pushd $SCRIPT_PATH/configs > /dev/null 2>&1
     if ! source $config_file > /dev/null 2>&1 ; then
-        echo "Loading base configuration \"config_file\" failed."
+        echo "Loading base configuration \"$config_file\" failed."
         exit 1
     fi
     popd > /dev/null 2>&1
 }
 
 
-# @stdout   ... nothing
-# @input $1 ... config name
-# @exit     ... 1 on error
-# @return   ... $?
+# @stdout ... nothing
+# @input  ... $1 config name
+# @exit   ... 1 on error
+# @return ... $?
 function load_config()
 {
-    local config_name=$1
-    local config_file=${config_name}-xsetwacom.cfg
+    local config_name="$1"
+    local config_file="${config_name}_xsetwacom.cfg"
     
     pushd $SCRIPT_PATH/configs > /dev/null 2>&1
     if ! source $config_file > /dev/null 2>&1 ; then
-        echo "Loading configuration \"config_file\" failed."
+        echo "Loading configuration \"$config_file\" failed."
         exit 1
     fi
     popd > /dev/null 2>&1
@@ -71,8 +55,9 @@ function load_config()
 # @return ... $?
 function get_default_config_name()
 {
-    local config_names=($(get_config_names))
-    echo ${config_names[0]}
+    #local config_names=($(get_config_names))
+    #echo ${config_names[0]}
+    echo "default"
 }
 
 # @stdout   ... the formatted associated array 
@@ -101,21 +86,29 @@ function print_loaded_config()
 {
     local identation=$1
     local config_variables=(
+        "DEVICE_HINT_STRING"
+        "ALL_DEVICE_IDS"
         "PAD_DEVICE_IDS"
         "STYLUS_DEVICE_IDS"
         "ERASER_DEVICE_IDS"
+        "CURSOR_DEVICE_IDS"
+        "TOUCH_DEVICE_IDS"
         "XBINDKEYS_CFG"
     )
     local config_arrays=(
         "ALL_PARAMETERS"
         "PAD_PARAMETERS"
-        "PAD_BUTTON_MAPPING"
+        "PAD_BUTTON_MAPPINGS"
         "STYLUS_PARAMETERS"
-        "STYLUS_BUTTON_MAPPING"
+        "STYLUS_BUTTON_MAPPINGS"
         "ERASER_PARAMETERS"
-        "ERASER_BUTTON_MAPPING"
+        "ERASER_BUTTON_MAPPINGS"
+        "CURSOR_PARAMETERS"
+        "CURSOR_BUTTON_MAPPINGS"
+        "TOUCH_PARAMETERS"
+        "TOUCH_BUTTON_MAPPINGS"
     )
-    
+   
     for config_var_name in "${config_variables[@]}" ; do
         declare -n ref=$config_var_name
         echo "$identation$config_var_name = \"$ref\""
@@ -247,7 +240,7 @@ function print_devices()
 # @stdout ... the device number
 # @input  ... none
 # @return ... $?
-function _grep_device_id()
+function _get_device_id()
 {
     grep --perl-regex --only-matching "(?<=id: )\s*[0-9]*\s*(?=type:)" | tr "\n" " " | tr -d "\t\r" | xargs
 }
@@ -257,44 +250,73 @@ function _grep_device_id()
 # @return ... $?
 function get_all_device_ids()
 {
-    xsetwacom --list devices | _grep_device_id
+    xsetwacom --list devices | _get_device_id
 }
 
-
-# @stdout ... all pad device numbers, space separated
-# @input  ... none
+# @stdout ... all device numbers, space separated
+# @input  ... $1 optional case insensitive device hint i.e. "Wacom intuos Pro" or "Wacom Untuos BT"
 # @return ... $?
-function get_all_pad_device_ids()
+function get_device_ids()
 {
-    xsetwacom --list devices | grep "pad" | _grep_device_id
+    local device_hint="$1"
+    xsetwacom --list devices | grep -i "$device_hint" | _get_device_id
+
 }
 
-
-# @stdout ... all stylus device numbers, space separated
-# @input ... none
+# @stdout ... pad device numbers, space separated
+# @input  ... $1 optional device hint
 # @return ... $?
-function get_all_stylus_device_ids()
+function get_pad_device_ids()
 {
-    xsetwacom --list devices | grep "stylus" | _grep_device_id
+    local device_hint="$1"
+    xsetwacom --list devices | grep -i "$device_hint" | grep "pad" | _get_device_id
 }
 
 
-# @stdout ... all eraser device numbers, space separated
-# @input ... none
+# @stdout ... stylus device numbers, space separated
+# @input  ... $1 optional device hint
 # @return ... $?
-function get_all_eraser_device_ids()
+function get_stylus_device_ids()
 {
-    xsetwacom --list devices | grep "eraser" | _grep_device_id
+    local device_hint="$1"
+    xsetwacom --list devices | grep -i "$device_hint" | grep "stylus" | _get_device_id
 }
 
+
+# @stdout ... eraser device numbers, space separated
+# @input  ... $1 optional device hint
+# @return ... $?
+function get_eraser_device_ids()
+{
+    local device_hint="$1"
+    xsetwacom --list devices | grep -i "$device_hint" | grep "eraser" | _get_device_id
+}
+
+# @stdout ... cursor device numbers, space separated
+# @input  ... $1 optional device hint
+# @return ... $?
+function get_cursor_device_ids()
+{
+    local device_hint="$1"
+    xsetwacom --list devices | grep -i "$device_hint" | grep "cursor" | _get_device_id
+}
+
+# @stdout ... eraser device numbers, space separated
+# @input  ... $1 optional device hint
+# @return ... $?
+function get_touch_device_ids()
+{
+    local device_hint="$1"
+    xsetwacom --list devices | grep -i "$device_hint" | grep "touch" | _get_device_id
+}
 
 # @input $1 ... identation
-# @stdout   ... all connected devices' supported parameters
+# @stdout   ... all supported device parameters
 # @return   ... $?
-function print_all_devices_parameters()
+function print_all_device_parameters()
 {
     local identation=$1
-    for device_id in $(get_all_device_ids) ; do
+    for device_id in $(get_device_ids "$DEVICE_HINT_STRING") ; do
         echo "${identation}Device $device_id parameters"
         local lines=$(xsetwacom --shell --get $device_id all 2>&1 | grep -v "does not exist")
         while read line ; do
@@ -363,11 +385,11 @@ function exit_if_no_device_found()
 
 # @pre    ... XSETWACOM_PARAMS_OLD was updated
 # @input  ... nothing
-# @stdout ... diff of XSETWACOM_PARAMS_OLD and print_all_devices_parameters
+# @stdout ... diff of XSETWACOM_PARAMS_OLD and print_all_device_parameters
 # @return ... $?
 function print_effective_changes()
 {
-    local xsewacom_params_new=$(print_all_devices_parameters)
+    local xsewacom_params_new=$(print_all_device_parameters)
     local effective_changes=$(diff <(echo "$XSETWACOM_PARAMS_OLD") <(echo "$xsewacom_params_new") && echo "xsetwacom reported no changes" )
 
     echo "$effective_changes" | awk -v idnt="$identation$identation" '{ print idnt""$0 }'

@@ -39,28 +39,31 @@ Probably this step is not necessary for other devices.
     # other examples
     xsetwacom.sh                    # read all values from config and configure to device
     xsetwacom.sh --map primary      # map the pad to the primary monitor
-    xsetwacom.sh --curve 0 0 50 70  # set the pressure curve
     xsetwacom.sh --mode Absolute    # use absolute cursor
     xsetwacom.sh --parameters       # print supported parameters and exit
 
 ## Synopsis
     $ xsetwacom.sh --help
     Usage: xsetwacom.sh [OPTION ...] 
-    
+
     Without command line arguments the script loads the default conguration and applies the parameters to attached device(s).
-    
+    Note: always specify --config as first prameter (even for --help).
+
     Options:
-    
+
       --parameters        Print all supported device parameters and exit.
-      --print-config [default|gimp|krita|mypaint]
+      --configs           List all configuration names and exit.
+      --print-config [<config-name>]
                           Print the configuration and exit.
+                          config-name: see --configs.
                           Default: default.
       --help              Print this help.
-    
+
       A few device arguments can be defined by command line. Any other must be defined in the configuration file.
-    
-      --config [default|gimp|krita|mypaint]
+
+      --config [<config-name>]
                           If specified always let this argument be the 1st on command line. Create your own configs in ./configs/.
+                          config-name: see --configs.
                           Default: default.
       --map [primary|seconary|whole|next]
                           Map device to primary, secondary or all monitor(s) (as reported by xrandr).
@@ -73,16 +76,13 @@ Probably this step is not necessary for other devices.
       --mode [Absolute|Relative]
                           Absolute or relative pointer behaviour.
                           Default: Absolute
-      --curve [x1 y1 x2 y2]
-                          Set the pressure curve (3rd oder Bezier)
-                          Default: 0 0 50 70
-    
-      Key binding manipulaton (see allso xbindkeys manual).
-    
+
+      Key binding manipulaton (see also xbindkeys manual).
+
       --xbindkeys [nodaemon|daemon|reload|kill]
                           Manipulate system key bindings and exit.
-                            nodaemon: start xbindkeys with configuration krita-xbindkeys.cfg in foreground
-                            daemon:   start xbindkeys with configuration krita-xbindkeys.cfg in background
+                            nodaemon: start xbindkeys with configuration krita-intuos-bt_xbindkeys.cfg in foreground
+                            daemon:   start xbindkeys with configuration krita-intuos-bt_xbindkeys.cfg in background
                             reload:   tell xbindkeys to reaload the configuration
                             kill:     try to stop all xbindkeys instances
                           Default: nodaemon.
@@ -204,6 +204,19 @@ Probably this step is not necessary for other devices.
     $ # you can safely close this shell
 
 # Notes
+
+## Intuos Pro L
+
+This device broadcasts two Bluetooth beacons:
+
+1. BT IntuosPro L, and
+2. LE IntuosPro L.
+
+In case of frequent disconnects or no battery level being reported remove all stored connections and pair the deivce again.
+First the LE then the BT connection:
+
+1. long press on touch circle button -> pair the LE connection, then
+2. long press on touch circle button -> pair the BT connection
 
 ## Intuos BT M
 

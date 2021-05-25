@@ -4,7 +4,7 @@ SCRIPT_NAME="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
 SCRIPT_PATH="$(dirname "$(test -L "$0" && readlink "$0" || echo "$0")")"
 
 source ${SCRIPT_PATH}/src/utils.sh
-XSETWACOM_PARAMS_OLD=$(print_all_devices_parameters)
+XSETWACOM_PARAMS_OLD=""
 GEOMETRIES=($(get_geometries))
 CONFIG_NAME=$(get_default_config_name)
 
@@ -14,23 +14,26 @@ load_base_config
 # @return ... $?
 function usage()
 {
-    local config_names=$(get_config_names | tr " " "|")
     echo -en "Usage: $SCRIPT_NAME [OPTION ...] \n"
     echo -en "\n"
     echo -en "Without command line arguments the script loads the default conguration and applies the parameters to attached device(s).\n"
+    echo -en "Note: always specify --config as first prameter (even for --help).\n"
     echo -en "\n"
     echo -en "Options:\n"
     echo -en "\n"
     echo -en "  --parameters        Print all supported device parameters and exit.\n"
-    echo -en "  --print-config [${config_names}]\n"
+    echo -en "  --configs           List all configuration names and exit.\n"
+    echo -en "  --print-config [<config-name>]\n"
     echo -en "                      Print the configuration and exit.\n"
+    echo -en "                      config-name: see --configs.\n"
     echo -en "                      Default: ${CONFIG_NAME}.\n"
     echo -en "  --help              Print this help.\n"
     echo -en "\n"
     echo -en "  A few device arguments can be defined by command line. Any other must be defined in the configuration file.\n"
     echo -en "\n"
-    echo -en "  --config [${config_names}]\n"
+    echo -en "  --config [<config-name>]\n"
     echo -en "                      If specified always let this argument be the 1st on command line. Create your own configs in ./configs/.\n"
+    echo -en "                      config-name: see --configs.\n"
     echo -en "                      Default: ${CONFIG_NAME}.\n"
     echo -en "  --map [primary|seconary|whole|next]\n"
     echo -en "                      Map device to primary, secondary or all monitor(s) (as reported by xrandr).\n"
@@ -43,11 +46,8 @@ function usage()
     echo -en "  --mode [Absolute|Relative]\n"
     echo -en "                      Absolute or relative pointer behaviour.\n"
     echo -en "                      Default: ${ALL_PARAMETERS[Mode]}\n"
-    echo -en "  --curve [x1 y1 x2 y2]\n"
-    echo -en "                      Set the pressure curve (3rd oder Bezier)\n"
-    echo -en "                      Default: ${ALL_PARAMETERS[PressureCurve]}\n"
     echo -en "\n"
-    echo -en "  Key binding manipulaton (see allso xbindkeys manual).\n"
+    echo -en "  Key binding manipulaton (see also xbindkeys manual).\n"
     echo -en "\n"
     echo -en "  --xbindkeys [nodaemon|daemon|reload|kill]\n"
     echo -en "                      Manipulate system key bindings and exit.\n"
@@ -103,12 +103,12 @@ function parse_cli_args()
                 fi
                 shift
             ;;
-            --curve)
-                shift
-                if [ "x" != "x$1" ] ; then
-                    PRESSURE_CURVE="$1"
-                    shift
-                fi
+            --configs)
+                echo "Configurations found:"
+                for c in `get_config_names` ; do
+                  echo "  $c"
+                done
+                exit 0
             ;;
             --config)
                 shift
@@ -120,7 +120,7 @@ function parse_cli_args()
                 load_config "$CONFIG_NAME"
             ;;
             --parameters)
-                print_all_devices_parameters
+                print_all_device_parameters
                 exit 0
             ;;
             --print-config)
@@ -169,27 +169,46 @@ function parse_cli_args()
 function configure_devices()
 {
     local identation=$1
-    local connected_device_ids=$(get_all_device_ids)
+    local connected_device_ids=$(get_device_ids "$DEVICE_HINT_STRING")
 
     for device_id in $PAD_DEVICE_IDS ; do
-        echo "${identation}Configure pad device $device_id"
-        echo $connected_device_ids | grep $device_id > /dev/null 2>&1 \
+        test -n "$device_id" \
+        && echo "$connected_device_ids" | grep "$device_id" > /dev/null 2>&1 \
+        && echo "${identation}Configure pad device $device_id" \
         && configure_device $device_id "PAD" "${identation}${identation}" \
         || echo "${identation}Pad device $device_id not connected. Configuration skipped for $device_id."
     done
 
     for device_id in $STYLUS_DEVICE_IDS ; do
-        echo "${identation}Configure pen device $device_id"
-        echo $connected_device_ids | grep $device_id > /dev/null 2>&1 \
+        test -n "$device_id" \
+        && echo "$connected_device_ids" | grep "$device_id" > /dev/null 2>&1 \
+        && echo "${identation}Configure pen device $device_id" \
         && configure_device $device_id "STYLUS" "${identation}${identation}" \
         || echo "${identation}Stylus device $device_id not connected. Configuration skipped for $device_id."
     done
 
     for device_id in $ERASER_DEVICE_IDS ; do
-        echo "${identation}Configure eraser device $device_id"
-        echo $connected_device_ids | grep $device_id > /dev/null 2>&1\
+        test -n "$device_id" \
+        && echo "$connected_device_ids" | grep "$device_id" > /dev/null 2>&1 \
+        && echo "${identation}Configure eraser device $device_id" \
         && configure_device $device_id "ERASER" "${identation}${identation}" \
         || echo "${identation}Eraser device $device_id not connected. Configuration skipped for $device_id."
+    done
+
+    for device_id in $CURSOR_DEVICE_IDS ; do
+        test -n "$device_id" \
+        && echo "$connected_device_ids" | grep "$device_id" > /dev/null 2>&1 \
+        && echo "${identation}Configure cursor device $device_id" \
+        && configure_device $device_id "CURSOR" "${identation}${identation}" \
+        || echo "${identation}Cursor device $device_id not connected. Configuration skipped for $device_id."
+    done
+
+    for device_id in $TOUCH_DEVICE_IDS ; do
+        test -n "$device_id" \
+        && echo "$connected_device_ids" | grep "$device_id" > /dev/null 2>&1\
+        && echo "${identation}Configure touch device $device_id" \
+        && configure_device $device_id "TOUCH" "${identation}${identation}" \
+        || echo "${identation}Touch device $device_id not connected. Configuration skipped for $device_id."
     done
 }
 
@@ -206,18 +225,18 @@ function configure_device()
     local identation=$3
     local config_mappings=(
         _PARAMETERS
-        _BUTTON_MAPPING
+        _BUTTON_MAPPINGS
     )
     local config_mapping_name=""
     
     config_mapping_name="ALL_PARAMETERS"
-    echo "${identation}Configure device $device_id with $config_mapping_name (${#ALL_PARAMETERS[@]})"
+    echo "${identation}Configure device $device_id with ${#ALL_PARAMETERS[@]} $config_mapping_name"
     set_device_parameters "$device_id" "ALL_PARAMETERS" "$identation$identation"
 
     for config_mapping_postfix in ${config_mappings[@]} ; do
         config_mapping_name=$config_mappoing_prefix$config_mapping_postfix
         declare -n ref=$config_mapping_name
-        echo "${identation}Configure device $device_id with $config_mapping_name (${#ref[@]})"
+        echo "${identation}Configure device $device_id with ${#ref[@]} $config_mapping_name"
         unset -n ref
         set_device_parameters "$device_id" "$config_mapping_name" "$identation$identation"
     done
@@ -236,9 +255,10 @@ function main()
     && exit_if_no_device_found && warn_if_device_in_android_mode \
     && echo "Found devices:" && print_devices "$identation" \
     && load_config "$CONFIG_NAME" \
+    && XSETWACOM_PARAMS_OLD=$(print_all_device_parameters) \
     && echo "Configuration \"$CONFIG_NAME\" loaded:" && print_loaded_config "  " \
-    && echo "Configure devices: $(get_all_device_ids)" && configure_devices "$identation" \
-    && echo "Current device settings:" && print_all_devices_parameters "$identation" \
+    && echo "Configure ${#ALL_DEVICE_IDS[@]} devices of $DEVICE_HINT_STRING (${ALL_DEVICE_IDS[@]}):" && configure_devices "$identation" \
+    && echo "Current device settings:" && print_all_device_parameters "$identation" \
     && echo "Device settings diff (old vs. new config):" && print_effective_changes
     popd > /dev/null 2>&1
 }
