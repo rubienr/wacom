@@ -37,7 +37,7 @@ Probably this step is not necessary for other devices.
                                                    #   button 4 maps device to secondary screen
 
     # other examples
-    xsetwacom.sh                    # read all values from config and configure to device
+    xsetwacom.sh                    # read default config values and configure the device
     xsetwacom.sh --map primary      # map the pad to the primary monitor
     xsetwacom.sh --mode Absolute    # use absolute cursor
     xsetwacom.sh --parameters       # print supported parameters and exit
