@@ -220,6 +220,8 @@ First the LE then the BT connection:
 
 ## Intuos BT M
 
+The four wheel modes according to the lit LED are supported (see configuration file).
+
 This device can be connected in three ways:
 
 * by Bletooth (LED lights blue)
