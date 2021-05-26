@@ -195,31 +195,6 @@ function get_next_geometry()
     return 1
 }
 
-
-# @stdout   ... noting
-# @input $1 ... string
-# @return   ... $?
-function save_geometry()
-{
-    local geometry="$1"
-    pushd $SCRIPT_PATH/configs > /dev/null 2>&1
-    echo "$geometry" > .geometry.tmp
-    popd > /dev/null 2>&1
-}
-
-
-# @stdout ... value
-# @input  ... nothing
-# @return ... $?
-function get_saved_geometry()
-{
-    local geometry="$1"
-    pushd $SCRIPT_PATH/configs > /dev/null 2>&1
-    cat .geometry.tmp
-    popd > /dev/null 2>&1
-}
-
-
 # ========================== section devices ==========================
 
 

@@ -77,16 +77,12 @@ function parse_cli_args()
                 shift
                 if [ "xprimary" == "x$1" ] ; then
                     ALL_PARAMETERS[MapToOutput]=${GEOMETRIES[1]}
-                    save_geometry "${ALL_PARAMETERS[MapToOutput]}"
                 elif [ "xsecondary" == "x$1" ] ; then
                     ALL_PARAMETERS[MapToOutput]=${GEOMETRIES[2]}
-                    save_geometry "${ALL_PARAMETERS[MapToOutput]}"
                 elif [ "xwhole" == "x$1" ] ; then
                     ALL_PARAMETERS[MapToOutput]=${GEOMETRIES[0]}
-                    save_geometry "${ALL_PARAMETERS[MapToOutput]}"
                 elif [ "xnext" == "x$1" ] ; then
-                    ALL_PARAMETERS[MapToOutput]=$(get_next_geometry "$(echo ${GEOMETRIES[@]})" "$(get_saved_geometry)")
-                    save_geometry "${ALL_PARAMETERS[MapToOutput]}"
+                    ALL_PARAMETERS[MapToOutput]="next"
                 else
                     usage
                     exit 1
