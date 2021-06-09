@@ -426,3 +426,62 @@ function bind_keys()
         ;;
     esac
 }
+
+
+# ============================ section plot ============================
+
+
+# @pre      ... cofiguration is loaded
+# @input    ... nothing
+# @stdout   ... control points
+# @exit     ... no exit
+# @return   ... $?
+# @requires ... gnuplot
+function plot_pressure_curve()
+{
+    local array_name=$1
+    declare -n aarray=$1
+        
+    declare -a pc
+    pc=(${aarray[PressureCurve]})
+    local plot_data="0 0\n${pc[0]} ${pc[1]}\n${pc[2]} ${pc[3]}\n100 100\n"
+
+    echo -e "bezier pressure curve control points:\nx y"
+    echo -e "$plot_data"
+    
+    echo -e "${plot_data}e\n" | tee -a /dev/stdout \
+    | gnuplot -p -e "set grid; plot '-' using 1:2 smooth bezier title 'pressure curve', '' using 1:2 with linespoints pointtype 3 title 'control points'"
+}
+
+# Live plots the current pressure mapped from 0 to 65536.
+# @pre      ... nothing
+# @input $1 ... optional device hint/name, e.g. "pen stylus" or "pen eraser"
+# @stdout   ... nothing
+# @exit     ... no exit
+# @return   ... $?
+# @requires ... xinput, feedgnuplot
+function plot_current_pressure()
+{
+    local device_hint="pen stylus"
+
+    if [ -n "$1" ] ; then
+      device_hint="$1"
+    fi
+
+    device_info=`xinput --list | grep -i "$device_hint"`
+    declare -a device_ids
+    device_ids=(`echo "$device_info" | grep -i "$device_hint" | grep --perl-regexp --only-matching "(?<=id=).*(?=\[)" | tr --delete "[:blank:]"`)
+    device_id=${device_ids[0]}
+
+    if [ -z "$device_id" ] ; then
+      echo "no device found with hint \"$device_hint\""
+      return
+    else
+      echo -e "found device(s):\n$device_info"
+      echo "chosen id: $device_id"
+    fi
+
+    xinput --test "$device_id" \
+      | awk -F '[[:blank:]]*a\\[[[:digit:]]+\\]=' '{ if ($4 > 0) {print $4 ; fflush()} }' \
+      | feedgnuplot --exit --stream 0.25 --lines --unset grid --xlen 1000 --ymin 0 --ymax 65536
+}

@@ -56,6 +56,14 @@ function usage()
     echo -en "                        reload:   tell xbindkeys to reaload the configuration\n"
     echo -en "                        kill:     try to stop all xbindkeys instances\n"
     echo -en "                      Default: ${XBINDKEYS_MODE}.\n"
+    echo -en "\n"
+    echo -en "  Plot pressure cure.\n"
+    echo -en "\n"
+    echo -en "  --curve\n"
+    echo -en "                      Plot the configured pressure curve and the resulting Bezier curve.\n"
+    echo -en "  --pressure\n"
+    echo -en "                      Live plot the current pressure curve. The pressure plot does not appear until the first pressure value is reported.
+}\n"
 }
 
 
@@ -144,6 +152,18 @@ function parse_cli_args()
                     shift
                 fi
                 bind_keys "$XBINDKEYS_MODE"
+                exit 0
+            ;;
+            --curve)
+                shift
+                # todo - ERASER_PARAMETERS
+                plot_pressure_curve "STYLUS_PARAMETERS"
+                exit 0
+            ;;
+            --pressure)
+                shift
+                # todo - "Pen eraser"
+                plot_current_pressure "Pen stylus"
                 exit 0
             ;;
             *)
