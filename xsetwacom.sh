@@ -18,6 +18,7 @@ function usage()
     echo -en "\n"
     echo -en "Without command line arguments the script loads the default conguration and applies the parameters to attached device(s).\n"
     echo -en "Note: always specify --config as first prameter (even for --help).\n"
+    echo -en "Note: gnome-shell is not supported. Most settings will work except emitting button events (see man xsetwacom \"Button button-number [mapping]\" in section PARAMETERS)."
     echo -en "\n"
     echo -en "Options:\n"
     echo -en "\n"
@@ -42,7 +43,6 @@ function usage()
     echo -en "                        secondary = ${GEOMETRIES[2]}\n"
     echo -en "                        whole     = ${GEOMETRIES[0]}\n"
     echo -en "                        next      = next geometry (cycles through all geometries)\n"
-    echo -en "                      Default: ${ALL_PARAMETERS[MapToOutput]}\n"
     echo -en "  --mode [Absolute|Relative]\n"
     echo -en "                      Absolute or relative pointer behaviour.\n"
     echo -en "                      Default: ${ALL_PARAMETERS[Mode]}\n"
@@ -62,8 +62,7 @@ function usage()
     echo -en "  --curve\n"
     echo -en "                      Plot the configured pressure curve and the resulting Bezier curve.\n"
     echo -en "  --pressure\n"
-    echo -en "                      Live plot the current pressure curve. The pressure plot does not appear until the first pressure value is reported.
-}\n"
+    echo -en "                      Live plot the current pressure curve (requires feedgnuplot). The pressure plot does not appear until the first pressure value is reported.\n"
 }
 
 

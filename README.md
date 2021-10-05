@@ -48,7 +48,7 @@ Probably this step is not necessary for other devices.
 
     Without command line arguments the script loads the default conguration and applies the parameters to attached device(s).
     Note: always specify --config as first prameter (even for --help).
-
+    Note: gnome-shell is not supported. Most settings will work except emitting button events (see man xsetwacom "Button button-number [mapping]" in section PARAMETERS)
     Options:
 
       --parameters        Print all supported device parameters and exit.
@@ -68,11 +68,10 @@ Probably this step is not necessary for other devices.
       --map [primary|seconary|whole|next]
                           Map device to primary, secondary or all monitor(s) (as reported by xrandr).
                           xrandr reported geometries are:
-                            primary   = 2048x1280+0+0
-                            secondary = 2048x1280+2048+0
-                            whole     = 4096x1280+0+0
+                            primary   = 3840x2160+0+0
+                            secondary = 3840x2160+3840+0
+                            whole     = 7680x2160+0+0
                             next      = next geometry (cycles through all geometries)
-                          Default: 4096x1280+0+0
       --mode [Absolute|Relative]
                           Absolute or relative pointer behaviour.
                           Default: Absolute
@@ -86,6 +85,14 @@ Probably this step is not necessary for other devices.
                             reload:   tell xbindkeys to reaload the configuration
                             kill:     try to stop all xbindkeys instances
                           Default: nodaemon.
+
+      Plot pressure cure.
+
+      --curve
+                          Plot the configured pressure curve and the resulting Bezier curve.
+      --pressure
+                          Live plot the current pressure curve (requires feedgnuplot). The pressure plot does not appear until the first pressure value is reported.
+
 
 ## Full Example - Device Setup
 

@@ -402,12 +402,16 @@ function bind_keys()
 
     case $mode in
         daemon)
+            pushd "$SCRIPT_PATH" > /dev/null 2>&1
             echo "bind keys with $SCRIPT_PATH/configs/$XBINDKEYS_CFG_FILE (running in background)"
             xbindkeys --file "$SCRIPT_PATH/configs/$XBINDKEYS_CFG_FILE" > /dev/null 2>&1
+            popd
         ;;
         nodaemon)
+            pushd "$SCRIPT_PATH" > /dev/null 2>&1
             echo "bind keys with $SCRIPT_PATH/configs/$XBINDKEYS_CFG_FILE"
             xbindkeys --file "$SCRIPT_PATH/configs/$XBINDKEYS_CFG_FILE" --verbose --nodaemon
+            popd
         ;;
         kill)
             killall xbindkeys
@@ -483,5 +487,5 @@ function plot_current_pressure()
 
     xinput --test "$device_id" \
       | awk -F '[[:blank:]]*a\\[[[:digit:]]+\\]=' '{ if ($4 > 0) {print $4 ; fflush()} }' \
-      | feedgnuplot --exit --stream 0.25 --lines --unset grid --xlen 1000 --ymin 0 --ymax 65536
+      | feedgnuplot --exit --stream 0.25 --y2 1 --lines --unset grid --xlen 1000 --ymin 0 --ymax 65536 --y2min 0 --y2max 65536
 }
