@@ -2,30 +2,30 @@
 
 The configuration allows a more complete way to control the wacom board behaviour.
 It turned out that Gnome 2/3 and KDE Plasma as of 2022 perform still very poor in this regards.
-The user defined Wacom board behaviour is achieved by the
+The user defined Wacom board behaviour is achieved by
 
 - `xsetwacom` (behaviour), 
-- `XBindKeys` (tiggers 'xsetwacom.sh') and 
+- `XBindKeys` (tiggers `xsetwacom.sh`) and 
 - scripting (`xsetwacom.sh`).
 
-A configuration set consists always of two files.
+A configuration set always consists of two files.
 One file configures what parameters `xsetwacom` will send to the device.
 The other tells `XBindKeys` how and when to trigger `xsetwacom.sh`.
-This is mandatory for the wheel-button and LEDs state (i.e. Intuous Pro) but is handy if one button shall sycle through the screen mapping (left, right, both).
+This is mandatory for the wheel-button and LEDs state (i.e. Intuous Pro) but is also handy if one button shall cycle through the screen mapping (left, right, both).
 
 ## Naming Convention
 
-Each cofig consists of two files:
-- `xsetwacom` configuration (settings for buttons and pen)
-- `xbindkeys` configuration (information how/when to trigger `xsetwacom.sh`)
+Each config consists of two files:
+- `xsetwacom` configuration (buttons and pen settings)
+- `xbindkeys` configuration (information how/when `xsetwacom.sh` is triggered)
 
-The prefix of related configuration files should match but is not mandatory.
-The postfix pattern is mandatory.
+The prefix of related configuration files should match but is not mandatory to do so.
+However, the postfix pattern is fixed and mandatory.
 
 Recommended pattern is:
 
-- <configuration-name>_xsetwacom.cfg
-- <configuration-name>_xbindkeys.cfg
+- \<configuration-name\>_xsetwacom.cfg
+- \<configuration-name\>_xbindkeys.cfg
 
 **Notes:**
 - The `<configuration-name>` can be anything except 'default' or 'baseconfig' and must not contain '_'.
@@ -34,11 +34,11 @@ Recommended pattern is:
 **Examples:**
 
 - Krita
-  - krita_xbindkeys.cfg
   - krita_xsetwacom.cfg
+  - krita_xbindkeys.cfg
 - Blender (sculpting)    
   - blender-sculpting_xsetwacom.cfg
-  - blender-sculpting_xsetwacom.cfg
+  - blender-sculpting_xbindkeys.cfg
 - Blender (2D animation)    
   - blender-2d-animation_xsetwacom.cfg
-  - blender-2d-animation_sculpting_xsetwacom.cfg
+  - blender-2d-animation_xbindkeys.cfg
