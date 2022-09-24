@@ -28,7 +28,7 @@ A one time configuration can be achieved as follows:
 - `xsetwacom` - mandatory
 - `xbindkeys` - optional but recommended: triggers scripts on mouse events (button press), needed for wheel button (not all devices have this), automatic toggle mapped screen area (dual screen mode)
   - xdotool - optional: only if you intend to map mouse events to keyboard events (without "xsetwacom set NN Button key ...")
-- xrandr - mandatory
+- `xrandr` - mandatory
 
 **Aims**
 
@@ -40,7 +40,7 @@ A one time configuration can be achieved as follows:
 - fancy GUI
 - auto configuration
 
-## Preparation
+## Preparation Notes
 
 ### Intuos Pro L
 
