@@ -2,19 +2,19 @@
 
 Since the Wacom config UI in KDE Plasma and Gnome 2/3 perform very poor in defining a proper behaviour,
 this srtipting project aims to allow a more sophisticated way to configure a Wacom board.
-It relays on the tools `xsetwacom` and `XBindKeys`.
+It is based on `xsetwacom` and `XBindKeys`.
 This tool also helps to visualize the pen pressure curve and the pen pressure (live plot) for adjustments.
 
 **Examples**
 
-This will read the `krita-intuous-pro` configs and one button to cycle through the screen mappings (left, right, screens) and run in background.
-Additionally, cycling will trigger to reload the whole configuration from disk set the parameters to the device.
+This will read the `krita-intuous-pro` configs, run `xbindkeys` in backgruond and map one button to cycle through the screen mappings (left, right, both).
+Additionally to cycling, it will trigger to reload the whole configuration from disk and set the device parameters with `xsetwacom`.
 
     $ ./xsetwacom.sh --config krita-intuous-pro --xbindkeys daemon
-    bind keys with /home/rubienr/git/wacom/configs/blender-intuos-pro-sculpting_xbindkeys.cfg (running in background)
+    bind keys with /home/.../krita-intuous-pro.cfg (running in background)
 
-A one time configuration can be achieved as follows
-     
+A one time configuration can be achieved as follows:
+
     $ ./xsetwacom.sh --config krita-intuous-pro
 
 **Limitations**
@@ -33,13 +33,12 @@ A one time configuration can be achieved as follows
 **Aims**
 
 - simple
-- reliable
 - painless setup
 
 **Non Aims**
 
 - fancy GUI
-- autoconfig
+- auto configuration
 
 ## Preparation
 
