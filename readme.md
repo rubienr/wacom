@@ -1,31 +1,84 @@
 # Yet another Wacom Tool
 
-Since the Ubuntu Wacom UI config behaves flaky I decided to do it on my own, relying only on command line and xsetwacom.
-The script will not only work  Ubuntu but most probably also on a stone-age CentOS.
-All it needs is
+Since the Wacom config UI in KDE Plasma and Gnome 2/3 perform very poor in defining a proper behaviour,
+this srtipting project aims to allow a more sophistiated way to configure Wacom board.
+It relays on the tools `xsetwacom` and `XBindKeys`.
 
-* xsetwacom - mandatory
-* xbindkeys - optional: only if you intend to map mouse events to scripts
-  * xdotool - optional: only if you intend to map mouse events to keyboard events (without "xsetwacom set NN Button key ...")
-* xrandr - mandatory
+**Limitations**
 
-## Aims
-* simple
-* stable
-* reliable
-* painless setup
+- X11 only
+- no Wayland support
+- not Gnome Shell support (github.com/linuxwacom/xf86-input-wacom/issues/289)
 
-## Non Aims
-* fancy GUI
-* autoconfig
 
-# Usage
+**Requirements**
 
-I tested this script on Ubuntu with Intuos BT M.
-If your device is connected by USB, the Intuos BT M needs to be switched to Descktop Mode.
-Wiht bluetooth it works out of the box.
-Plese consult the Notes section for information about the modes.
+- xsetwacom - mandatory
+- xbindkeys - optional: only if you intend to map mouse events to scripts
+  - xdotool - optional: only if you intend to map mouse events to keyboard events (without "xsetwacom set NN Button key ...")
+- xrandr - mandatory
 
+**Aims**
+
+- simple
+- stable
+- reliable
+- painless setup
+
+**Non Aims**
+
+- fancy GUI
+- autoconfig
+
+## Preparation
+
+### Intuos Pro L
+
+This device broadcasts two Bluetooth beacons. Both connections need to be paired onece 'LE Intuous Pro L' and 'BT Intuous Pro L'.
+In case of frequent disconnects or no battery level being reported remove all stored connections and pair the deivce again.
+First pair the LE then the BT connection. Once paired, connecting to BT is sufficient.
+
+1. long press on touch circle button -> pair the LE connection, then
+2. long press on touch circle button -> pair the BT connection
+
+### Intuos BT M
+
+This device can be connected in three ways:
+
+- by Bletooth (LED lights blue)
+- by USB
+  - in Desktop Mode (LED lights bright white)
+  - in Mobile Mode (LED lights dim white)
+  
+If the device is connected by USB, the Intuos BT M needs to be switched to Descktop Mode, by bluetooth it works out of the box.
+
+To switch in between both USB modes press the **leftmost + rightmost buttons simultaneously** for about four seconds until the white LED goes off.
+For this step the USB cable must be connected.
+Unfortunately this step is poorly propagated and the last mode is not preserved or the mode is not detected correctly.
+See: https://github.com/linuxwacom/xf86-input-wacom/wiki/Known-Issues#android-misdetect
+
+Device detected if connected by:
+
+1. Bluetooth
+
+       $ xsetwacom --list
+       Wacom Intuos BT M Pad pad               id: 10  type: PAD
+       Wacom Intuos BT M Pen stylus            id: 11  type: STYLUS
+
+2. USB - Mobile Mode (default)
+
+       $ xsetwacom --list
+       Wacom Co.,Ltd. Intuos BT M stylus       id: 10  type: STYLUS
+       Wacom Co.,Ltd. Intuos BT M eraser       id: 11  type: ERASER
+
+3. USB - Desktop Mode
+
+       $ xsetwacom --list
+       Wacom Intuos BT M Pad pad               id: 10  type: PAD
+       Wacom Intuos BT M Pen stylus            id: 11  type: STYLUS
+       Wacom Intuos BT M Pen eraser            id: 17  type: ERASER
+       Wacom Intuos BT M Pen cursor            id: 18  type: CURSOR
+       
 ## Examples
 
 If your Intuos BT M device is connected by USB press the **leftmost + rightmost button simultaneously** until the white LED goes off and on agian (dim white).
@@ -94,7 +147,20 @@ Probably this step is not necessary for other devices.
                           Live plot the current pressure curve (requires feedgnuplot). The pressure plot does not appear until the first pressure value is reported.
 
 
-## Full Example - Device Setup
+## Full Example
+
+### Bind Device Buttons to Script
+
+This will bind one button to toggle the screen mapping (left screen, right screen, both screens) and run in background.
+Apart of re-mapping the screen area, each button press will trigger to load the whole configuration from disk set the parameters to the device.
+
+    $ ./xsetwacom.sh --config krita --xbindkeys daemon
+    bind keys with /home/rubienr/git/wacom/configs/blender-intuos-pro-sculpting_xbindkeys.cfg (running in background)
+
+
+### Device Setup (one time shot, not mandatory).
+
+This will configure the stylus and device button events as needed in Krita.
 
     $ ./xsetwacom.sh --config krita
     Found devices:
@@ -204,59 +270,7 @@ Probably this step is not necessary for other devices.
         > xsetwacom set "8" "Button" "1" "key +b -b "
         > xsetwacom set "8" "Button" "2" "key +t -t "
     
-## Full Example - Bind Device Buttons to Script
 
-    $ ./xsetwacom.sh --config krita --xbindkeys daemon
-    bind keys with ./configs/krita-xbindkeys.cfg (running in background)
-    $ # you can safely close this shell
 
-# Notes
 
-## Intuos Pro L
 
-This device broadcasts two Bluetooth beacons:
-
-1. BT IntuosPro L, and
-2. LE IntuosPro L.
-
-In case of frequent disconnects or no battery level being reported remove all stored connections and pair the deivce again.
-First the LE then the BT connection:
-
-1. long press on touch circle button -> pair the LE connection, then
-2. long press on touch circle button -> pair the BT connection
-
-## Intuos BT M
-
-The four wheel modes according to the lit LED are supported (see configuration file).
-
-This device can be connected in three ways:
-
-* by Bletooth (LED lights blue)
-* by USB
-  * in Desktop Mode (LED lights bright white)
-  * in Mobile Mode (LED lights dim white)
-
-To switch the Intuos BT M in between both USB modes press the **leftmost + rightmost buttons simultaneously** for about four seconds until the white LED goes off.
-For this the USB cable must be connected.
-Unfortunately this step is poorly propagated and the last mode is not preserved or the mode is not detected correctly.
-See: https://github.com/linuxwacom/xf86-input-wacom/wiki/Known-Issues#android-misdetect
-
-1. connected by Bluetooth
-
-       $ xsetwacom --list
-       Wacom Intuos BT M Pad pad               id: 10  type: PAD
-       Wacom Intuos BT M Pen stylus            id: 11  type: STYLUS
-
-2. connectede by USB - Mobile Mode (default)
-
-       $ xsetwacom --list
-       Wacom Co.,Ltd. Intuos BT M stylus       id: 10  type: STYLUS
-       Wacom Co.,Ltd. Intuos BT M eraser       id: 11  type: ERASER
-
-3. connected by USB - Desktop Mode
-
-       $ xsetwacom --list
-       Wacom Intuos BT M Pad pad               id: 10  type: PAD
-       Wacom Intuos BT M Pen stylus            id: 11  type: STYLUS
-       Wacom Intuos BT M Pen eraser            id: 17  type: ERASER
-       Wacom Intuos BT M Pen cursor            id: 18  type: CURSOR
