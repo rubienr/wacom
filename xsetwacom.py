@@ -4,6 +4,7 @@ import os
 
 from src.ConfigLoader import ConfigLoader
 from src.DeviceTypeName import DeviceTypeName
+from src.geometry_utils import AreaToOutputMappingMode, map_area_to_output
 from src.tablet_config_utils import configure_devices, print_all_device_parameters
 from src.tablet_utils import print_devices, plot_pressure_curve, plot_current_pressure, get_device_id, get_devices_id
 from src.xbindkeys_utils import run_xbindkeys
@@ -29,6 +30,12 @@ class Args(object):
         layout_group.add_argument("-w", "--xsetwacom",
                                   help="Applies configuration to digitizer; see --config",
                                   action="store_true")
+        layout_group.add_argument("-g", "--geometry",
+                                  help="Modifies the input area according to the current display geometry."
+                                       "next: map to next display, input area is trimmed to retain horizontal vs. vertical proportions;"
+                                       "next_scale: map to next display, input area mapped to output (causes distortion width:height ratio of display is not same as digitizer ratio)",
+                                  choices=(["next", "next_scale"]),
+                                  default="next")
 
         export_group = parser.add_argument_group("Xbindkeys (start, stop, reload)")
         export_group.add_argument("-x", "--xbindkeys",
@@ -95,6 +102,10 @@ def run():
         config_loader.load_config(args.config)
         config = config_loader.config
         configure_devices(config)
+    elif args.geometry:
+        config_loader.load_config(args.config)
+        config = config_loader.config
+        map_area_to_output(config.device_hint_expression, AreaToOutputMappingMode.TRIMMED_INPUT_AREA_FULL_DISPLAY)
     elif args.xbindkeys:
         config_loader.load_config(args.config)
         config = config_loader.config

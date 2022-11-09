@@ -65,7 +65,7 @@ class Config(BaseConfig):
 
         self.xbindkeys_config_string = f"""
 # bind button 12 to toggle screens/geometry
-"./xsetwacom.py --xsetwacom --config {BaseConfig.config_name_from_abs_filepath(__file__)} --map next"
+"./xsetwacom.py --xsetwacom --config {BaseConfig.config_name_from_abs_filepath(__file__)} --geometry next"
 b:12
 
 # bind the wheel button to toggle a complete re-configuration of the pad depending on the LEDs state
