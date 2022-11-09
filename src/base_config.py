@@ -1,19 +1,11 @@
 import pprint
-from enum import Enum
 from typing import Dict, Union, Callable, Tuple
 
-
-class DeviceConfigType(Enum):
-    PAD = 1
-    STYLUS = 2
-    ERASER = 3
-    CURSOR = 4
-    TOUCH = 5
-    ALL = 6
+from src.DeviceTypeName import DeviceTypeName
 
 
-class DeviceParameter(object):
-    def __init__(self):
+class DeviceParameters(object):
+    def __init__(self, args: Dict[str, Union[str, Callable[[], str]]]):
         """
         Allowed parameter (`xsetwacom --list parameters`):
             Area                  - Valid tablet area in device coordinates.
@@ -56,14 +48,14 @@ class DeviceParameter(object):
             MapToOutput           - Map the device to the given output.
         """
 
-        self.args: Dict[str, Union[str, Callable[[], str]]] = {}
+        self.args: Dict[str, Union[str, Callable[[], str]]] = args
 
 
 class BaseConfig(object):
 
     def __init__(self):
         self.device_hint_expression: str = ""  # i.e. regex ".*Wacom Intuos Pro.*"
-        self.devices: Dict[DeviceConfigType: DeviceParameter] = {}
+        self.devices_parameters: Dict[DeviceTypeName: DeviceParameters] = {}
         self.xbindkeys_config_string = ""
         """
         Example:
@@ -78,7 +70,7 @@ class BaseConfig(object):
         """
 
         self.pressure_curve: \
-            Dict[DeviceConfigType,  # stylus or eraser
+            Dict[DeviceTypeName,  # stylus or eraser
                  Tuple[  # bezier in-between (0,0), p1, p2, (100,100) for each pressure device
                      Tuple[int, int],  # p1
                      Tuple[int, int],  # p2
@@ -87,7 +79,7 @@ class BaseConfig(object):
     def print_config(self):
         p = pprint.PrettyPrinter(indent=4, compact=True)
         p.pprint({"device_hint": self.device_hint_expression,
-                  "devices": self.devices,
+                  "devices_parameters": self.devices_parameters,
                   "xbindkeys": self.xbindkeys_config_string,
                   "pressure_curve": self.pressure_curve,
                   })

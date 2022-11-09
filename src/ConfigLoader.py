@@ -2,7 +2,7 @@ import importlib
 import os
 from typing import List, Optional
 
-from configs.base_config import BaseConfig
+from src.base_config import BaseConfig
 
 
 class ConfigName(object):

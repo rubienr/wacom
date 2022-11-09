@@ -2,10 +2,10 @@
 import argparse
 import os
 
-from configs.base_config import DeviceConfigType
 from src.ConfigLoader import ConfigLoader
-from src.tablet_utils import print_devices, get_device_ids, print_all_device_parameters_by_device, print_all_device_parameters, plot_pressure_curve, plot_current_pressure, get_stylus_device_ids, \
-    configure_device
+from src.DeviceTypeName import DeviceTypeName
+from src.tablet_config_utils import configure_devices, print_all_device_parameters
+from src.tablet_utils import print_devices, plot_pressure_curve, plot_current_pressure, get_device_id, get_devices_id
 from src.xbindkeys_utils import run_xbindkeys
 
 
@@ -19,25 +19,29 @@ class Args(object):
     def __init__(self, env: Env, config_loader: ConfigLoader):
         parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-        layout_group = parser.add_argument_group("Device")
+        layout_group = parser.add_argument_group("Digitizer")
         layout_group.add_argument("-d", "--devices",
-                                  help="list devices",
+                                  help="list devices (i.e. stylus, eraser, touch, pad)",
                                   action="store_true")
         layout_group.add_argument("-p", "--parameter",
-                                  help="list all current device(s) parameter (device must be attached)",
-                                  choices=(["-"] + get_device_ids(".*")))
+                                  help="List all current device(s) parameter by device-id (digitizer must be attached). Device '-' denotes any device.",
+                                  choices=(["-"] + get_devices_id(".*", DeviceTypeName.ANY)))
+        layout_group.add_argument("-w", "--xsetwacom",
+                                  help="Applies configuration to digitizer; see --config",
+                                  action="store_true")
 
-        export_group = parser.add_argument_group("Xbindkeys")
+        export_group = parser.add_argument_group("Xbindkeys (start, stop, reload)")
         export_group.add_argument("-x", "--xbindkeys",
-                                  help="start xbindkeys and run in foreground (does not touch tablet parameters)",
-                                  action="store_true")
-        export_group.add_argument("-b", "--background",
-                                  help="send xbindkeys in background (with -x or --xbindkeys)",
-                                  action="store_true")
+                                  help="Start (fg, bg) 'xbindkeys' and run in foreground (fg), detach to background (bg), kill (ki) running instances or reload (re) configuration."
+                                       "Xbindkeys will intercept mouse/key events ant trigger actions accordingly. "
+                                       "Applies Xbindkeys configuration as specified by --config."
+                                       "Does not change device parameters.",
+                                  choices=["fg", "bg", "re", "ki"],
+                                  default="fg")
 
         config_group = parser.add_argument_group("Configuration")
         config_group.add_argument("-c", "--config",
-                                  help="apply configuration.",
+                                  help="Apply given configuration for the current run.",
                                   choices=[c.config_name for c in config_loader.config_names()],
                                   default="krita_intuos_pro")
         config_group.add_argument("-s", "--configs",
@@ -72,32 +76,29 @@ def run():
     if args.devices:
         print_devices()
     elif args.parameter:
-        if "-" == args.parameter:
-            print_all_device_parameters_by_device()
-        else:
-            print_all_device_parameters(args.parameter)
+        device_id = None if args.parameter == "-" else args.parameter
+        print_all_device_parameters(device_id)
     elif args.print:
         config_loader.load_config(args.print)
         config_loader.config.print_config()
     elif args.curve:
         config_loader.load_config(args.config)
         config = config_loader.config
-        plot_pressure_curve(config.pressure_curve[DeviceConfigType.STYLUS])
+        plot_pressure_curve(config.pressure_curve[DeviceTypeName.STYLUS])
     elif args.pressure:
         config_loader.load_config(args.config)
         config = config_loader.config
-        device_ids = get_stylus_device_ids(config.device_hint_expression)
-        assert len(device_ids) == 1
-        device_id = device_ids[0]
+        device_id = get_device_id(config.device_hint_expression, DeviceTypeName.STYLUS)
+        assert device_id
         plot_current_pressure(device_id)
+    elif args.xsetwacom:
+        config_loader.load_config(args.config)
+        config = config_loader.config
+        configure_devices(config)
     elif args.xbindkeys:
         config_loader.load_config(args.config)
         config = config_loader.config
-        run_xbindkeys(config.xbindkeys_config_string, run_in_background=args.background is not None)
-    else:
-        config_loader.load_config(args.config)
-        config = config_loader.config
-        configure_device(config)
+        run_xbindkeys(config.xbindkeys_config_string, args.xbindkeys)
 
 
 if __name__ == "__main__":
