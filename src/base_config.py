@@ -1,7 +1,11 @@
+import os
 import pprint
 from typing import Dict, Union, Callable, Tuple
 
 from src.DeviceTypeName import DeviceTypeName
+
+CONFIG_FILE_MODULE_SUFFIX: str = "_config"
+PY_CONFIG_FILE_SUFFIX: str = f"{CONFIG_FILE_MODULE_SUFFIX}.py"
 
 
 class DeviceParameters(object):
@@ -83,3 +87,7 @@ class BaseConfig(object):
                   "xbindkeys": self.xbindkeys_config_string,
                   "pressure_curve": self.pressure_curve,
                   })
+
+    @staticmethod
+    def config_name_from_abs_filepath(file_path_with_py_extension: str) -> str:
+        return os.path.basename(file_path_with_py_extension).removesuffix(PY_CONFIG_FILE_SUFFIX)

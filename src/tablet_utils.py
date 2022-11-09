@@ -17,7 +17,7 @@ def _lines_from_stream(lines_stream):
 
 # ============================================================ section: device wheel / LED status
 
-def get_led_intensities() -> Dict[int, int]:
+def get_leds_brightness() -> Dict[int, int]:
     lines = _lines_from_stream(_run_subprocess(r"cat /sys/module/wacom/drivers/hid\:wacom/*/input/input*/input*\:\:wacom-0.*/brightness").stdout)
     intensities = dict()
     idx = 0
@@ -30,7 +30,7 @@ def get_led_intensities() -> Dict[int, int]:
 
 
 def get_led_on_off_state() -> Dict[int, bool]:
-    intensities = get_led_intensities()
+    intensities = get_leds_brightness()
     return {k: intensities[k] > 0 for k in intensities.keys()}
 
 
@@ -90,14 +90,15 @@ def print_devices() -> None:
 
 # ============================================================ section: stylus pressure curve
 
-def plot_pressure_curve(points: Tuple[Tuple[int, int], Tuple[int, int]]):
+def plot_pressure_curve(two_points: Tuple[Tuple[int, int], Tuple[int, int]]):
     """
     requires gnuplot
     """
-    plot_data = f"0 0\n{points[0][0]} {points[0][1]}\n{points[1][0]} {points[1][1]}\n100 100\n"
+    plot_data = f"0 0\n{two_points[0][0]} {two_points[0][1]}\n{two_points[1][0]} {two_points[1][1]}\n100 100\n"
     print("bezier pressure curve control points:\nx y")
     print("x y")
     print(f"{plot_data}")
+    # TODO - pythonic way
     command = f"echo -e \"{plot_data}e\n\" " \
               f"| tee - a / dev / stdout " \
               f"| gnuplot -p -e \"set grid; " \
@@ -117,6 +118,7 @@ def plot_current_pressure(device_id: str):
        device_ids=(`echo "$device_info" | grep -i "$device_hint" | grep --perl-regexp --only-matching "(?<=id=).*(?=\[)" | tr --delete "[:blank:]"`)
        device_id=${device_ids[0]}
     """
+    # TODO - pythonic way
     command = f"xinput --test \"{device_id}\" " \
               r"| awk -F '[[:blank:]]*a\\[[[:digit:]]+\\]=' '{ if ($4 > 0) {print $4 ; fflush()} }' " \
               "| feedgnuplot --exit --stream 0.25 --y2 1 --lines --unset grid --xlen 1000 --ymin 0 --ymax 65536 --y2min 0 --y2max 65536"
