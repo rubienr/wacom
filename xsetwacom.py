@@ -15,6 +15,7 @@ class Env(object):
     def __init__(self):
         self.script_abs_dir = os.path.dirname(__file__)
         self.configs_rel_path_name = "configs"
+        self.tmp_files_abs_dir = self.script_abs_dir
 
 
 class Args(object):
@@ -139,7 +140,7 @@ class Runner(object):
             if self.args.set:
                 configure_devices(self.config)
             if self.args.map:
-                map_area_to_output(self.config.device_hint_expression, AreaToOutputMappingMode.TRIMMED_INPUT_AREA_FULL_DISPLAY)
+                map_area_to_output(self.config.device_hint_expression, AreaToOutputMappingMode.TRIMMED_INPUT_AREA_FULL_DISPLAY, self.env.tmp_files_abs_dir)
             if self.args.parameter:
                 device_id = None if self.args.parameter == "-" else self.args.parameter
                 print_all_device_parameters(device_id)
