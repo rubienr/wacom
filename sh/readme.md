@@ -1,9 +1,9 @@
-# Yet another Wacom Tool
+# Yet another Wacom Tool**NOTE: The shell script variant is not maintained anymore. For newer features use the Python implementation**
 
 **NOTE: The shell script variant is not maintained anymore. For newer features use the Python implementation**  
 
 Since the Wacom config UI in KDE Plasma and Gnome 2/3 perform very poor in defining a proper behaviour,
-this srtipting project aims to allow a more sophisticated way to configure a Wacom board.
+this scripting project aims to allow a more sophisticated way to configure a Wacom board.
 It is based on `xsetwacom` and `XBindKeys`.
 This tool also helps to visualize the pen pressure curve and the pen pressure (live plot) for adjustments.
 

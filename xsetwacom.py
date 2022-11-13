@@ -76,11 +76,11 @@ class Args(object):
                        action="store_true")
         g.add_argument("-p", "--print",
                        help="Print configuration values and exit.",
-                       choices=[c.config_name for c in config_loader.config_names()])
+                       action="store_true")
 
         sp = sub_parsers.add_parser("plot",
-                                    help="visualize pressure and pen curve",
-                                    description="Visualizes the pen curve (static) or the current pen pressure (live).")
+                                    help="Visualize pressure curve or current pressure.",
+                                    description="Visualizes the pressure curve (static) or the current pressure (live).")
         g = sp.add_mutually_exclusive_group()
         g.add_argument("-c", "--curve",
                        help="Plot the configured pressure curve and the resulting Bezier curve (requires gnuplot).",
@@ -89,6 +89,10 @@ class Args(object):
                        help="Live plot the current pressure curve (requires xinput and feedgnuplot). "
                             "The pressure plot does not appear until the first pressure value is reported.",
                        action="store_true")
+        sp.add_argument("-d", "--device",
+                        help="The pressure device.",
+                        choices=[DeviceTypeName.STYLUS.name, DeviceTypeName.ERASER.name],
+                        default=DeviceTypeName.STYLUS.name)
 
         self.args: argparse.Namespace = self.parser.parse_args()
 
@@ -113,7 +117,7 @@ class Runner(object):
         if not self._config:
             self.config_loader.load_config(self.args.config)
             self._config = self.config_loader.config
-        return self.config_loader.config
+        return self._config
 
     def run(self) -> int:
 
@@ -127,7 +131,7 @@ class Runner(object):
                 for config_name in self.config_loader.config_names():
                     print(f"  - {config_name.config_name} in {os.path.join(self.env.script_abs_dir, self.env.configs_rel_path_name)}")
             if self.args.print:
-                self.config_loader.config.print_config()
+                self.config.print_config()
 
         if self.args.command == "device":
             if self.args.list:
@@ -151,10 +155,16 @@ class Runner(object):
                 xbindkeys_killall()
 
         if self.args.command == "plot":
+            device: DeviceTypeName = DeviceTypeName[self.args.device]
             if self.args.curve:
-                plot_pressure_curve(self.config.pressure_curve[DeviceTypeName.STYLUS])
+                try:
+                    curve = self.config.devices_parameters[device].args["PressureCurve"].split(" ")
+                    curve_points = ((curve[0], curve[1]), (curve[2], curve[3]))
+                    plot_pressure_curve(curve_points)
+                except:
+                    print(f"WARNING: no curve configured for device '{self.args.device}'")
             if self.args.pressure:
-                plot_current_pressure(get_device_id(self.config.device_hint_expression, DeviceTypeName.STYLUS))
+                plot_current_pressure(get_device_id(self.config.device_hint_expression, device))
 
         return 0
 

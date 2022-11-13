@@ -19,7 +19,7 @@ class Config(BaseConfig):
     def __init__(self):
         super().__init__()
         self.device_hint_expression: str = ".*Wacom Intuos Pro.*"
-        self.devices_parameters: Dict[DeviceTypeName: DeviceParameters] = {
+        self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {
             DeviceTypeName.PAD:
                 DeviceParameters({
                     "Mode": "Absolute",
@@ -84,6 +84,7 @@ b:10
             TouchRingMode.TWO: "key +plus",  # zoom in
             TouchRingMode.THREE: "key +altgr 8 key +altgr 8 key +altgr 8",  # increase brush size
             TouchRingMode.FOUR: "key I",  # increase opacity
+            TouchRingMode.UNDEFINED: "",  # in case device is not connected
         }[Config._get_touch_ring_mode()]
 
     @staticmethod
@@ -97,6 +98,7 @@ b:10
             TouchRingMode.TWO: "key +minus",  # zoom out
             TouchRingMode.THREE: "key +altgr 9 key +altgr 9 key +altgr 9",  # decrease brush size
             TouchRingMode.FOUR: "key O",  # decrease opacity
+            TouchRingMode.UNDEFINED: "",  # in case device is not connected
         }[Config._get_touch_ring_mode()]
 
     @staticmethod
