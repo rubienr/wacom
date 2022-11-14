@@ -40,7 +40,7 @@ def _run_list_devices() -> List[str]:
     return _lines_from_stream(_run_subprocess("xsetwacom --list devices").stdout)
 
 
-def get_devices_info(device_hint_expr: str = ".*", device_type: Optional[DeviceTypeName] = None) \
+def get_devices_info(device_hint_expr: str = ".*", device_types: Optional[List[DeviceTypeName]] = None) \
         -> List[
             Tuple[
                 str,  # device id
@@ -57,16 +57,16 @@ def get_devices_info(device_hint_expr: str = ".*", device_type: Optional[DeviceT
            Wacom Intuos Pro L Pen eraser   	id: 14	type: ERASER
            Wacom Intuos Pro L Pad pad      	id: 18	type: PAD
         """
-    device_type = DeviceTypeName.ANY if not device_type else device_type
+    device_types = [DeviceTypeName.ANY] if not device_types else device_types
     all_devices = [line for line in _run_list_devices()]
     devices = [d for d in all_devices if re.search(device_hint_expr, d) is not None]
     re_matches = [re.match(f".*id:\\s*(\\d*)\\s*type:\\s*(\\w*)\\s*.*", line_with_id) for line_with_id in devices]
     ids = [(match.group(1), match.group(2), match.group(0)) for match in re_matches if match is not None]
-    return [(i, name, info) for (i, name, info) in ids if name == device_type.value or DeviceTypeName.ANY == device_type]
+    return [(i, name, info) for (i, name, info) in ids if name in [t.value for t in device_types] or DeviceTypeName.ANY in device_types]
 
 
 def get_devices_id(device_hint_expr: str, device_type: Optional[DeviceTypeName] = None) -> List[str]:
-    return [i for (i, _name, _info) in get_devices_info(device_hint_expr, device_type)]
+    return [i for (i, _name, _info) in get_devices_info(device_hint_expr, [device_type] if device_type else None)]
 
 
 def get_device_id(device_hint_expr: str, device_type: Optional[DeviceTypeName] = None) -> str:

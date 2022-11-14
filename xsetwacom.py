@@ -34,11 +34,13 @@ class Args(object):
                        help="Applies loaded configuration to the digitizer.",
                        action="store_true")
         g.add_argument("-m", "--map",
-                       help="Modifies the device input area according to the current display geometry. "
-                            "'next': map to next display, input area is trimmed to retain horizontal vs. vertical proportions. "
-                            "'next_scale': map to next display, input area mapped to output (causes distortion width:height ratio of display is not same as digitizer ratio)",
-                       choices=(["next", "next_scale"]),
-                       default="next")
+                       help="Modifies the device input area and maps it to the next display so that horizontal vs. vertical proportions are retained. "
+                            "'--map' is recommended over '--map_full'",
+                       action="store_true")
+        g.add_argument("-f", "--map_full",
+                       help="Map full device input area to the next display's full output. "
+                            "May cause distortion if width:height ratio of the display is not same as digitizer's width:height ratio.",
+                       action="store_true")
         g.add_argument("-p", "--parameter",
                        help="List all current device(s) parameter by device-id (digitizer must be attached). Device '-' denotes any device.",
                        choices=(["-"] + get_devices_id(".*", DeviceTypeName.ANY)))
@@ -68,7 +70,7 @@ class Args(object):
                        choices=[c.config_name for c in config_loader.config_names()],
                        default="krita_intuos_pro")
 
-        sp = sub_parsers.add_parser("cfg",
+        sp = sub_parsers.add_parser("config",
                                     help="print known configurations or configuration values",
                                     description="Print configuration names or read and print values of a specific configuration.")
         g = sp.add_mutually_exclusive_group()
@@ -126,7 +128,7 @@ class Runner(object):
             self.parser.print_help()
             return 1
 
-        if self.args.command == "cfg":
+        if self.args.command == "config":
             if self.args.list:
                 print("known configs:")
                 for config_name in self.config_loader.config_names():
@@ -139,8 +141,10 @@ class Runner(object):
                 print_devices()
             if self.args.set:
                 configure_devices(self.config)
+            if self.args.map_full:
+                map_area_to_output(self.config.device_hint_expression, self.config.device_input_area, AreaToOutputMappingMode.FULL_INPUT_AREA_FULL_DISPLAY, self.env.tmp_files_abs_dir)
             if self.args.map:
-                map_area_to_output(self.config.device_hint_expression, AreaToOutputMappingMode.TRIMMED_INPUT_AREA_FULL_DISPLAY, self.env.tmp_files_abs_dir)
+                map_area_to_output(self.config.device_hint_expression, self.config.device_input_area, AreaToOutputMappingMode.TRIMMED_INPUT_AREA_FULL_DISPLAY, self.env.tmp_files_abs_dir)
             if self.args.parameter:
                 device_id = None if self.args.parameter == "-" else self.args.parameter
                 print_all_device_parameters(device_id)

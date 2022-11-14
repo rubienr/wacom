@@ -4,6 +4,7 @@ from typing import Dict
 from src.DeviceTypeName import DeviceTypeName
 from src.base_config import BaseConfig
 from src.base_config import DeviceParameters
+from src.geometry_types import Point, InputArea
 from src.tablet_utils import get_led_on_off_state
 
 
@@ -19,6 +20,7 @@ class Config(BaseConfig):
     def __init__(self):
         super().__init__()
         self.device_hint_expression: str = ".*Wacom Intuos Pro.*"
+        self.device_input_area: InputArea = InputArea(Point(0, 0), Point(62200, 43200))
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {
             DeviceTypeName.PAD:
                 DeviceParameters({

@@ -1,8 +1,9 @@
 import os
 import re
-from typing import Dict, Union, Callable, Any, List
+from typing import Dict, Union, Callable, Any
 
 from src.DeviceTypeName import DeviceTypeName
+from src.geometry_types import InputArea, Point
 
 CONFIG_FILE_MODULE_SUFFIX: str = "_config"
 PY_CONFIG_FILE_SUFFIX: str = f"{CONFIG_FILE_MODULE_SUFFIX}.py"
@@ -70,6 +71,7 @@ class BaseConfig(object):
 
     def __init__(self):
         self.device_hint_expression: str = ""  # i.e. regex ".*Wacom Intuos Pro.*", see `xsetwacom --list devices`
+        self.device_input_area: InputArea = InputArea(Point(), Point())
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {}
         self.xbindkeys_config_string = ""
         """
@@ -88,9 +90,10 @@ class BaseConfig(object):
     def print_config(self, indent_level: int = 0, indent_spaces: int = 2):
         BaseConfig._print_dict(
             {"device_hint": self.device_hint_expression,
+             "devices_input_area": self.device_input_area.to_dict(),
              "devices_parameters": self.devices_parameters,
              "xbindkeys": self.xbindkeys_config_string,
-             })
+             }, indent_level=indent_level, indent_spaces=indent_spaces)
 
     @staticmethod
     def _print_dict(container: Dict[str, Any], indent_level: int = 0, indent_spaces: int = 2) -> None:
