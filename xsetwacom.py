@@ -8,7 +8,7 @@ from src.base_config import BaseConfig
 from src.geometry_utils import AreaToOutputMappingMode, map_area_to_output
 from src.tablet_config_utils import configure_devices, print_all_device_parameters
 from src.tablet_utils import print_devices, plot_pressure_curve, plot_current_pressure, get_device_id, get_devices_id
-from src.xbindkeys_utils import xbindkeys_start_foreground, xbindkeys_start_background, xbindkeys_reload_config_from_disk, xbindkeys_killall
+from src.xbindkeys_utils import xbindkeys_reload_config_from_disk, xbindkeys_killall, xbindkeys_start
 
 
 class Env(object):
@@ -54,13 +54,14 @@ class Args(object):
                        help="Start Xbindkeys and run in foreground (press CTRL+C to stop).",
                        action="store_true")
         g.add_argument("-b", "--background",
-                       help="Start Xbindkeys and run detached to background.",
+                       help="Start Xbindkeys and run detached in background.",
                        action="store_true")
         g.add_argument("-r", "--reload",
                        help="Tell running Xbindkeys instances to reload configuration from disk without restarting the process.",
                        action="store_true")
         g.add_argument("-k", "--kill",
-                       help="Kills running Xbindkeys instances.")
+                       help="Kills running Xbindkeys instances.",
+                       action="store_true")
 
         sub_group = self.parser.add_argument_group("Configuration",
                                                    description="Load and provide the configuration to the command.")
@@ -151,9 +152,9 @@ class Runner(object):
 
         if self.args.command == "bindkeys":
             if self.args.start:
-                xbindkeys_start_foreground(self.config.xbindkeys_config_string)
+                xbindkeys_start(self.config.xbindkeys_config_string, self.env.tmp_files_abs_dir)
             if self.args.background:
-                xbindkeys_start_background(self.config.xbindkeys_config_string)
+                xbindkeys_start(self.config.xbindkeys_config_string, self.env.tmp_files_abs_dir, run_in_background=True)
             if self.args.reload:
                 xbindkeys_reload_config_from_disk()
             if self.args.kill:
