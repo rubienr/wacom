@@ -8,9 +8,9 @@ limitations. It is based on `xsetwacom` and `XBindKeys`.
 - cycle in-between screens
 - auto adjust Wacom input area to preserve the `width:height` ratio on the output display
 - button events can be mapped to:
-  - hot-keys (several keys pressed at once)
-  - key sequence (to reset zoom and rotation in Krita: first press `5`, then release, then press `2`, then release)
-  - scripts, commands
+    - hot-keys (several keys pressed at once)
+    - key sequence (to reset zoom and rotation in Krita: first press `5`, then release, then press `2`, then release)
+    - scripts, commands
 - multiple configuration profiles
 - supports different models (not limited to Intuos Pro)
 - plot current pen or eraser pressure as a live plot
@@ -68,15 +68,15 @@ Configuration:
 
 ## Aims and Non Aims
 
-✓ simple \
-✓ painless setup \
-✓ allow sophisticated configuration \
-✗ no GUI, only CLI ✗ no auto configuration
+✓ simple to use \
+✓ fast to apply once configuration is created \
+✓ sophisticated configuration possible \
+✗ no GUI, only CLI
 
 ## Limitations
 
-✗ X11 only, no Wayland support \
-✗ no Gnome Shell support (github.com/linuxwacom/xf86-input-wacom/issues/289)
+✗ only X11, no Wayland \
+✗ no Gnome Shell support ([github.com/linuxwacom/xf86-input-wacom/issues/289](github.com/linuxwacom/xf86-input-wacom/issues/289))
 
 # Device Notes
 
