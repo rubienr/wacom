@@ -1,8 +1,9 @@
 # Yet another Wacom Tool
 
 Since the Wacom config UI in KDE Plasma and Gnome 2/3 is very limiting performs poor in defining a proper behaviour, this project aims to painlessly allow achieving a sophisticated Wacom board
-behaivour. It is based on `xsetwacom` and `XBindKeys`. This tool also helps to visualize the pressure curve and the current pressure (live plot).
+behaviour. It is based on `xsetwacom` and `XBindKeys`. This tool also helps to visualize the pressure curve and the current pressure (live plot).
 
+![Illustration](./img/usage-illustration.png)
 ## Examples
 
 ```bash
