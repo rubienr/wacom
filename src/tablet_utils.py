@@ -71,16 +71,23 @@ def get_devices_id(device_hint_expr: str, device_type: Optional[DeviceTypeName] 
 
 def get_device_id(device_hint_expr: str, device_type: Optional[DeviceTypeName] = None) -> str:
     ids = get_devices_id(device_hint_expr, device_type)
-    if len(ids) != 1:
+    if len(ids) == 0:
         print_devices()
+        print(f"no device matching hint criteria '{device_hint_expr}' found")
+
+    if len(ids) > 1:
+        print_devices()
+        print(f"device ambiguity for hint criteria '{device_hint_expr}'")
+        print_devices(get_devices_info(device_hint_expr))
+
     assert len(ids) == 1
     return ids[0]
 
 
-def print_devices() -> None:
-    devices = get_devices_info()
+def print_devices(devices: Optional[List[Tuple[str, DeviceTypeName, str]]] = None) -> None:
+    devices = get_devices_info() if not devices else devices
     if len(devices) > 0:
-        print(f"found {len(devices)} device(s):")
+        print(f"seen {len(devices)} device(s):")
         for i, name, info in devices:
             info = re.sub("\\s+", " ", info.strip())
             print(f"  - id={i} device={name} ({info})")

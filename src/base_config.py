@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Dict, Union, Callable, Any
+from typing import Dict, Union, Callable, Any, Tuple
 
 from src.DeviceTypeName import DeviceTypeName
 from src.geometry_types import InputArea, Point
@@ -10,7 +10,7 @@ PY_CONFIG_FILE_SUFFIX: str = f"{CONFIG_FILE_MODULE_SUFFIX}.py"
 
 
 class DeviceParameters(object):
-    def __init__(self, args: Dict[str, Union[str, Callable[[], str]]]):
+    def __init__(self, args: Dict[str, Union[Tuple[str, str], Callable[[], Tuple[str, str]]]]):
         self.known_args: Dict[str, str] = {
             # Allowed parameter (`xsetwacom --list parameters`):
             "Area": "Valid tablet area in device coordinates.",
@@ -52,15 +52,15 @@ class DeviceParameters(object):
             "PanScrollThreshold": "Adjusts distance required for pan actions to generate a scroll event",
             "MapToOutput": "Map the device to the given output.",
         }
-        self._args: Dict[str, Union[str, Callable[[], str]]] = {}
+        self._args: Dict[str, Union[Tuple[str, str], Callable[[], Tuple[str, str]]]] = {}
         self.args = args
 
     @property
-    def args(self):
+    def args(self) -> Dict[str, Union[Tuple[str, str], Callable[[], Tuple[str, str]]]]:
         return self._args
 
     @args.setter
-    def args(self, value: Dict[str, Union[str, Callable[[], str]]]):
+    def args(self, value: Dict[str, Union[Tuple[str, str], Callable[[], Tuple[str, str]]]]) -> None:
         for arg in value.keys():
             if not any([re.match(known_arg, arg) for known_arg in self.known_args.keys()]):
                 print(f"WARNING: unknown argument '{arg}' detected")
@@ -99,10 +99,13 @@ class BaseConfig(object):
     def _print_dict(container: Dict[str, Any], indent_level: int = 0, indent_spaces: int = 2) -> None:
         indent = " " * indent_level * indent_spaces
         for key, value in container.items():
-            if isinstance(value, str):
+            if isinstance(value, str) or isinstance(value, int):
                 print(f"{indent}{key}: {value}")
+            elif isinstance(value, Tuple):
+                print(f"{indent}{key}: {value[0]} - {value[1]}")
             elif callable(value):
-                print(f"{indent}{key}: {value()}")
+                evaluated = value()
+                print(f"{indent}{key}: {evaluated[0]} - {evaluated[1]}")
             elif isinstance(value, dict):
                 print(f"{indent}{key}:")
                 BaseConfig._print_dict(container[key], indent_level=indent_level + 1, indent_spaces=indent_spaces)

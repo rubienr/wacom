@@ -43,8 +43,8 @@ $ ./xsetwacom.py --config <your_config> device --set
 ## Synopsis
 
 ```bash
-$ ./xsetwacom.py --help    
-usage: xsetwacom.py [-h] [-c {krita_intuos_pro}] {device,bindkeys,cfg,plot} ...
+$ ./xsetwacom.py --help
+usage: xsetwacom.py [-h] [-c {krita_intuos_pro}] {device,bindkeys,config,plot} ...
 
 options:
   -h, --help            show this help message and exit
@@ -52,10 +52,10 @@ options:
 command (required):
   Run command with the loaded configuration.
 
-  {device,bindkeys,cfg,plot}
+  {device,bindkeys,config,plot}
     device              detect devices; set and get device parameter
     bindkeys            bind device-key events to system mouse/keyboard events
-    cfg                 print known configurations or configuration values
+    config              print known configurations or configuration values
     plot                Visualize pressure curve or current pressure.
 
 Configuration:
@@ -63,8 +63,7 @@ Configuration:
 
   -c {krita_intuos_pro}, --config {krita_intuos_pro}
                         Loads the given configuration by name. (default: krita_intuos_pro)
-
-```    
+```
 
 # Device Notes
 

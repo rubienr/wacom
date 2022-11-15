@@ -29,27 +29,25 @@ class Config(BaseConfig):
                     "Button 1": ("key +ctrl z", "undo"),
                     "Button 2": ("key shift", "Shift"),
                     "Button 3": ("key ctrl", "Control"),
-                    "Button 8": ("key +ctrl +alt 1", "swap with last tool"),
+                    "Button 8": ("key f", "tool radius, tool strength: Shift + f, tool angle: Control + f"),
                     # ↑ 4th button
                     # ↓ touch ring button
                     "Button 13": ("button 10", "toggle modes"),
                     # ↓ 5th button
-                    "Button 9": ("key e", "toggle brush mode: normal/erase"),
-                    "Button 10": ("key 5 2", "reset zoom + rotation"),
-                    "Button 11": ("key r", "reset tool"),
+                    "Button 9": ("key KP_1", "front view"),
+                    "Button 10": ("key KP_1 key KP_Separator key Home", "front view, center selected, frame all"),
+                    "Button 11": ("key q", "quick favourites"),
                     "Button 12": ("button 12", "map to next screen"),
                     # ↑ bottom button
                     "AbsWheelUp": Config.get_abs_wheel_up_mode,  # call-able retrieving the corresponding mode according to the touch-ring LED state
                     "AbsWheelDown": Config.get_abs_wheel_down_mode,  # call-able retrieving the corresponding mode according to the touch-ring LED state
                 }),
-            DeviceTypeName.STYLUS:
-                DeviceParameters({
-                    "PressureCurve": ("70 0 70 100", "stylus pressure curve"),
-                }),
-            DeviceTypeName.ERASER:
-                DeviceParameters({
-                    "PressureCurve": ("0 0 50 70", "eraser pressure curve"),
-                }),
+            DeviceTypeName.STYLUS: DeviceParameters({
+                "PressureCurve": ("40 0 40 100", "stylus pressure curve"),
+            }),
+            DeviceTypeName.ERASER: DeviceParameters({
+                "PressureCurve": ("0 0 50 70", "eraser pressure curve"),
+            }),
         }
 
         self.xbindkeys_config_string = f"""
@@ -69,11 +67,11 @@ b:10
         :return: key sequence (see man xsetwacom)
         """
         return {
-            TouchRingMode.ONE: ("key 4", "rotate right"),
-            TouchRingMode.TWO: ("key +plus", "zoom in"),
-            TouchRingMode.THREE: ("key +altgr 8 key +altgr 8 key +altgr 8", "increase brush size"),
-            TouchRingMode.FOUR: ("key I", "increase opacity"),
-            TouchRingMode.UNDEFINED: ("", "fallback in case device is not connected"),
+            TouchRingMode.ONE: ("key +shift KP_4", "roll/rotate right"),
+            TouchRingMode.TWO: ("key +KP_Add", "zoom in"),
+            TouchRingMode.THREE: ("key left", "previous frame"),
+            TouchRingMode.FOUR: ("key Down", "previous key frame"),
+            TouchRingMode.UNDEFINED: ("", "in case device is not connected"),
         }[Config._get_touch_ring_mode()]
 
     @staticmethod
@@ -83,11 +81,11 @@ b:10
         :return: key sequence (see man xsetwacom)
         """
         return {
-            TouchRingMode.ONE: ("key 6", "rotate left"),
-            TouchRingMode.TWO: ("key +minus", "zoom out"),
-            TouchRingMode.THREE: ("key +altgr 9 key +altgr 9 key +altgr 9", "decrease brush size"),
-            TouchRingMode.FOUR: ("key O", "decrease opacity"),
-            TouchRingMode.UNDEFINED: ("", "fallback in case device is not connected"),
+            TouchRingMode.ONE: ("key +shift KP_6", "roll/rotate left"),
+            TouchRingMode.TWO: ("key +KP_Subtract", "zoom out"),
+            TouchRingMode.THREE: ("key Right", "next frame"),
+            TouchRingMode.FOUR: ("key Up", "next key frame"),
+            TouchRingMode.UNDEFINED: ("", "in case device is not connected"),
         }[Config._get_touch_ring_mode()]
 
     @staticmethod

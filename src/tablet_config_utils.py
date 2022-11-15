@@ -1,7 +1,7 @@
 import difflib
 import re
 import subprocess
-from typing import List
+from typing import List, Tuple
 
 from src.DeviceTypeName import DeviceTypeName
 from src.base_config import BaseConfig, DeviceParameters
@@ -72,7 +72,7 @@ def set_device_parameter(device_id: str, parameter_name: str, parameter_value: s
 
 def set_device_parameters(device_id: str, parameters: DeviceParameters) -> None:
     for parameter, value_or_callable in parameters.args.items():
-        value = value_or_callable if isinstance(value_or_callable, str) else value_or_callable()
+        value, _help_text = value_or_callable if isinstance(value_or_callable, Tuple) else value_or_callable()
         set_device_parameter(device_id, parameter, value)
 
 
