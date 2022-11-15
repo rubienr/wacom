@@ -1,45 +1,38 @@
 # Yet another Wacom Tool
 
-Since the Wacom config UI in KDE Plasma and Gnome 2/3 is very limiting performs poor in defining a proper behaviour, this project aims to painlessly allow achieving a sophisticated Wacom board
-behaviour. It is based on `xsetwacom` and `XBindKeys`. This tool also helps to visualize the pressure curve and the current pressure (live plot).
+Since the Wacom configuration UIs in KDE Plasma and Gnome 2/3 are very limiting and provide only poor configuration ability, this tool allows achieving a Wacom board configuration beyond those
+limitations. It is based on `xsetwacom` and `XBindKeys`.
 
-![Illustration](./img/usage-illustration.png)
+**Noteworthy features:**
+
+- cycle in-between screens
+- auto adjust Wacom input area to preserve the `width:height` ratio on the output display
+- button events can be mapped to:
+  - hot-keys (several keys pressed at once)
+  - key sequence (to reset zoom and rotation in Krita: first press `5`, then release, then press `2`, then release)
+  - scripts, commands
+- multiple configuration profiles
+- supports different models (not limited to Intuos Pro)
+- plot current pen or eraser pressure as a live plot
+
 ## Examples
 
+![usage example](./img/usage-illustration.png)
+
 ```bash
-# in most cases, if the configuration is set up correctly, 
-# this is enough:
+# In most cases, if the configuration is set up correctly, this is enough:
 $ ./xsetwacom.py --config <your_config> bindkeys --start
-# xbindkeys will react on screen toggle (i.e. the bottom most button), 
-# and on mode switch (i.e. wheel button). 
-# This will trigger the re-configuration of either the input area or the wheel mode.
+# The script starts xbindkeys which in turn will react on button events and trigger actions, i.e:
+# - cycle screens (button and behaviour depends on configuration), 
+# - cycle button modes (button and behaviour depends on configuration). 
+
 ```
 
 ```bash
-# one time configuration: load configuration and set device parameters
+# A one time configuration loads the configuration and sends parameters to the device accordingly:
 $ ./xsetwacom.py --config <your_config> device --set
-# if screen toggle and mode switch is not desired, this command is enough
+# If cycling through screens or button modes is not required this command is enough.
 ```
-
-## Limitations
-
-- X11 only, no Wayland support
-- no Gnome Shell support (github.com/linuxwacom/xf86-input-wacom/issues/289)
-
-## Requirements
-
-- `xsetwacom` - mandatory
-- `xbindkeys` - optional but recommended: triggers scripts on mouse events (button press), needed for wheel button (not all devices have this), automatic toggle mapped screen area (dual screen mode)
-    - xdotool - optional: only if you intend to map mouse events to keyboard events (without "xsetwacom set NN Button key ...")
-- `xrandr` - mandatory
-
-## Aims and Non Aims
-
-- \+ simple
-- \+ painless setup
-- \+ allow sophisticated setup
-- \- no fancy GUI
-- \- no auto configuration
 
 ## Synopsis
 
@@ -66,6 +59,25 @@ Configuration:
                         Loads the given configuration by name. (default: krita_intuos_pro)
 ```
 
+## Requirements
+
+- Python 3 - mandatory
+- `xsetwacom` - mandatory
+- `xrandr` - mandatory
+- `xbindkeys` - optional but highly recommended; required by `bindkeys` sub-command
+
+## Aims and Non Aims
+
+✓ simple \
+✓ painless setup \
+✓ allow sophisticated configuration \
+✗ no GUI, only CLI ✗ no auto configuration
+
+## Limitations
+
+✗ X11 only, no Wayland support \
+✗ no Gnome Shell support (github.com/linuxwacom/xf86-input-wacom/issues/289)
+
 # Device Notes
 
 ## Intuos Pro L
@@ -80,10 +92,9 @@ both paired connections and pair the deivce again. First pair the LE then the BT
 
 This device can be connected in three ways:
 
-- by Bletooth (LED lights blue)
-- by USB
-    - in Desktop Mode (LED lights bright white)
-    - in Mobile Mode (LED lights dim white)
+1. by Bletooth (LED lights blue)
+2. by USB in Desktop Mode (LED lights bright white)
+3. by USB in Mobile Mode (LED lights dim white)
 
 If the device is connected by USB, the Intuos BT M needs to be switched to Descktop Mode, by bluetooth it works out of the box.
 
@@ -91,24 +102,26 @@ To switch in between both USB modes press the **leftmost + rightmost buttons sim
 Unfortunately this step is poorly propagated and the last mode is not preserved or the mode is not detected correctly.
 See: https://github.com/linuxwacom/xf86-input-wacom/wiki/Known-Issues#android-misdetect
 
-Device detected if connected by:
+Device detected if connected by ...
 
 1. Bluetooth
-
-       $ xsetwacom --list
-       Wacom Intuos BT M Pad pad               id: 10  type: PAD
-       Wacom Intuos BT M Pen stylus            id: 11  type: STYLUS
-
+   ```bash
+   $ xsetwacom --list
+   Wacom Intuos BT M Pad pad               id: 10  type: PAD
+   Wacom Intuos BT M Pen stylus            id: 11  type: STYLUS
+   ```
 2. USB - Mobile Mode (default)
+   ```bash
+    $ xsetwacom --list
+    Wacom Co.,Ltd. Intuos BT M stylus       id: 10  type: STYLUS
+    Wacom Co.,Ltd. Intuos BT M eraser       id: 11  type: ERASER
+   ```
 
-       $ xsetwacom --list
-       Wacom Co.,Ltd. Intuos BT M stylus       id: 10  type: STYLUS
-       Wacom Co.,Ltd. Intuos BT M eraser       id: 11  type: ERASER
-
-3. USB - Desktop Mode
-
-       $ xsetwacom --list
-       Wacom Intuos BT M Pad pad               id: 10  type: PAD
-       Wacom Intuos BT M Pen stylus            id: 11  type: STYLUS
-       Wacom Intuos BT M Pen eraser            id: 17  type: ERASER
-       Wacom Intuos BT M Pen cursor            id: 18  type: CURSOR
+3. USB - Desktop Mode (recommended)
+   ```bash
+    $ xsetwacom --list
+    Wacom Intuos BT M Pad pad               id: 10  type: PAD
+    Wacom Intuos BT M Pen stylus            id: 11  type: STYLUS
+    Wacom Intuos BT M Pen eraser            id: 17  type: ERASER
+    Wacom Intuos BT M Pen cursor            id: 18  type: CURSOR
+   ```
