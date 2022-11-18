@@ -32,7 +32,7 @@ class Config(BaseConfig):
                     "Button 8": ("key +ctrl +alt 1", "swap with last tool"),
                     # ↑ 4th button
                     # ↓ touch ring button
-                    "Button 13": ("button 13", "toggle modes") # leave default in order to work with xbindkeys without prior configuration by `xsetwacom --config <cfg> configure device --set`
+                    "Button 13": ("button 13", "toggle modes"), # leave default in order to work with xbindkeys without prior configuration by `xsetwacom --config <cfg> configure device --set`
                     # ↓ 5th button
                     "Button 9": ("key e", "toggle brush mode: normal/erase"),
                     "Button 10": ("key KP_1 +shift c key", "reset zoom + rotation"),
