@@ -22,16 +22,22 @@ limitations. It is based on `xsetwacom` and `XBindKeys`.
 ```bash
 # In most cases, if the configuration is set up correctly, this is enough:
 $ ./xsetwacom.py --config <your_config> bindkeys --start
-# The script starts xbindkeys which in turn will react on button events and trigger actions, i.e:
-# - cycle screens (button and behaviour depends on configuration), 
-# - cycle button modes (button and behaviour depends on configuration). 
+# To initially cofigure the device press the wheel/mode button once.
 
+# The script starts xbindkeys which in turn will react on button events and trigger actions, i.e:
+# - cycle screens and
+# - cycle button modes (i.e. wheel button or any other arbitrary button).
+
+# Note: if the device is disconnected and re-attahed each button emmits default events. 
+# For convenience, configurations are asked to react on the default events of
+# - the wheel/mode button and 
+# - the screen-cycle button.
 ```
 
 ```bash
-# A one time configuration loads the configuration and sends parameters to the device accordingly:
+# To initially cofigure a device:
 $ ./xsetwacom.py --config <your_config> device --set
-# If cycling through screens or button modes is not required this command is enough.
+# If cycling through screens or cycling through button modes (i.e. wheel button) is not required this command is enough.
 ```
 
 ## Synopsis
