@@ -19,7 +19,7 @@ class Config(BaseConfig):
                     "Button 1": ("button 0", "<button 1 not defined>"),
                     "Button 2": ("button 0", "<button 2 not defined>"),
                     "Button 3": ("button 0", "<button 3 not defined>"),
-                    "Button 8": ("button 8", "map to next screen"),
+                    "Button 8": ("button 8", "set all parameters and map to next screen"),
                 }),
             DeviceTypeName.STYLUS: DeviceParameters({
                 "PressureCurve": ("70 0 70 100", "stylus pressure curve"),
@@ -30,7 +30,8 @@ class Config(BaseConfig):
         }
 
         self.xbindkeys_config_string = f"""
-# bind button 8 to toggle screens/geometry
-"./xsetwacom.py --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --map"
+# bind button 8 to set all parameters and then cycle screens
+"./xsetwacom.py --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set &&\
+ ./xsetwacom.py --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --map"
 b:8
 """
