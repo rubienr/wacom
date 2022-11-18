@@ -119,3 +119,12 @@ class BaseConfig(object):
     @staticmethod
     def config_name_from_abs_filepath(file_path_with_py_extension: str) -> str:
         return os.path.basename(file_path_with_py_extension).removesuffix(PY_CONFIG_FILE_SUFFIX)
+
+    @staticmethod
+    def root_dir_from_abs_filepath(config_file: str) -> str:
+        """
+        Returns the script root directory of xsetwacom.py.
+        :param config_file: __file__
+        :return: the root directory as seen from the configuration file
+        """
+        return os.path.join(os.path.dirname(config_file), "../")

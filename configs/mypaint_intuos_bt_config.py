@@ -1,3 +1,4 @@
+import os
 from typing import Dict
 
 from src.DeviceTypeName import DeviceTypeName
@@ -31,7 +32,7 @@ class Config(BaseConfig):
 
         self.xbindkeys_config_string = f"""
 # bind button 8 to set all parameters and then cycle screens
-"./xsetwacom.py --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set &&\
- ./xsetwacom.py --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --map"
+"{os.path.join(BaseConfig.root_dir_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set &&\
+ {os.path.join(BaseConfig.root_dir_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --map"
 b:8
 """

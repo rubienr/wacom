@@ -1,3 +1,4 @@
+import os
 from enum import Enum
 from typing import Dict, Tuple
 
@@ -32,12 +33,12 @@ class Config(BaseConfig):
                     "Button 8": ("key +ctrl +alt 1", "swap with last tool"),
                     # ↑ 4th button
                     # ↓ touch ring button
-                    "Button 13": ("button 13", "toggle modes"), # leave default in order to work with xbindkeys without prior configuration by `xsetwacom --config <cfg> configure device --set`
+                    "Button 13": ("button 13", "toggle modes"),  # leave default in order to work with xbindkeys without prior configuration by `xsetwacom --config <cfg> configure device --set`
                     # ↓ 5th button
                     "Button 9": ("key e", "toggle brush mode: normal/erase"),
                     "Button 10": ("key KP_1 +shift c key", "reset zoom + rotation"),
                     "Button 11": ("key q", "quick favourites"),
-                    "Button 12": ("button 12", "map to next screen"), # leave default in order to work with xbindkeys without prior configuration by `xsetwacom --config <cfg> configure device --set`
+                    "Button 12": ("button 12", "map to next screen"),  # leave default in order to work with xbindkeys without prior configuration by `xsetwacom --config <cfg> configure device --set`
                     # ↑ bottom button
                     "AbsWheelUp": Config.get_abs_wheel_up_mode,  # call-able retrieving the corresponding mode according to the touch-ring LED state
                     "AbsWheelDown": Config.get_abs_wheel_down_mode,  # call-able retrieving the corresponding mode according to the touch-ring LED state
@@ -52,11 +53,11 @@ class Config(BaseConfig):
 
         self.xbindkeys_config_string = f"""
 # bind button 12 to toggle screens/geometry
-"./xsetwacom.py --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --map"
+"{os.path.join(BaseConfig.root_dir_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --map"
 b:12
 
 # bind the wheel button to toggle a complete re-configuration of the pad depending on the LEDs state
-"./xsetwacom.py --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set"
+"{os.path.join(BaseConfig.root_dir_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set"
 b:13
 """
 
