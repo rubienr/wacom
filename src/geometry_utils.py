@@ -48,7 +48,11 @@ def get_display_geometries(verbose: bool = True) -> List[Geometry]:
         min_width_displacement, max_width_displacement = Geometry(), Geometry()
         min_height_displacement, max_height_displacement = Geometry(), Geometry()
 
-        if len(geometries) > 1:
+
+        if len(geometries) == 2:
+            # 1st geometry: left most display
+            # 2nd geometry: right most display
+            # 3rd geometry: left + right display; works only with 2 horizontally or vertically aligned displays and same size
             for geometry in geometries:
                 if geometry.width_displacement_px > min_width_displacement.width_displacement_px:
                     max_width_displacement = geometry
@@ -83,7 +87,7 @@ def _next_geometry(temp_file_abs_path: str, temp_file_name: str = ".geometry.tmp
         temp_file = open(file_name, "rb")
         last_geometry = Geometry().from_dict(pickle.loads(temp_file.read()))
         temp_file.close()
-    except:
+    except (Exception,):
         print(f"failed to load pickled from file")
         default_geometry = Geometry()
         print(f"write default: {default_geometry.to_dict()}")
@@ -135,7 +139,6 @@ def _compute_trimmed_input_area_to_full_output(device_input_area: InputArea, out
     #  - map full display width to full device width
     #  - map full display height to full device height
 
-    trimmed_input_area = None
     if full_output_geometry.width_to_height_ratio > full_input_area.width_to_height_ratio:  # case 1)
         effective_input_height = full_input_area.width / full_output_geometry.width_px * full_output_geometry.height_px
         h1 = int((full_input_area.height - effective_input_height) / 2)

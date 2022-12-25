@@ -6,7 +6,18 @@ class Geometry(object):
                  width_px: int = 0, height_px: int = 0,
                  width_mm: int = 0, height_mm: int = 0,
                  width_displacement_px: int = 0, height_displacement_px: int = 0,
-                 idx: int = 0, name: str = ""):
+                 idx: int = 0, name: str = "") -> None:
+        """
+
+        :param width_px:
+        :param height_px:
+        :param width_mm:
+        :param height_mm:
+        :param width_displacement_px: 0 is left most
+        :param height_displacement_px: 0 is top most
+        :param idx: arbitrary nr for sorting; no duplicates
+        :param name: as reported by `xrandr --listactivemonitors`
+        """
         self.width_px: int = width_px
         self.height_px: int = height_px
         self.width_mm: int = width_mm
@@ -74,5 +85,5 @@ class SquareArea(object):
 
 
 class InputArea(SquareArea):
-    def __init__(self, top_left: Point, bottom_right: Point):
+    def __init__(self, top_left: Point, bottom_right: Point) -> None:
         super().__init__(top_left, bottom_right)

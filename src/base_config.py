@@ -10,7 +10,7 @@ PY_CONFIG_FILE_SUFFIX: str = f"{CONFIG_FILE_MODULE_SUFFIX}.py"
 
 
 class DeviceParameters(object):
-    def __init__(self, args: Dict[str, Union[Tuple[str, str], Callable[[], Tuple[str, str]]]]):
+    def __init__(self, args: Dict[str, Union[Tuple[str, str], Callable[[], Tuple[str, str]]]]) -> None:
         self.known_args: Dict[str, str] = {
             # Allowed parameter (`xsetwacom --list parameters`):
             "Area": "Valid tablet area in device coordinates.",
@@ -69,8 +69,8 @@ class DeviceParameters(object):
 
 class BaseConfig(object):
 
-    def __init__(self):
-        self.device_hint_expression: str = ""  # i.e. regex ".*Wacom Intuos Pro.*", see `xsetwacom --list devices`
+    def __init__(self) -> None:
+        self.device_hint_expression: str = ""  # i.e. regex r".*Wacom Intuos Pro.*", see `xsetwacom --list devices`
         self.device_input_area: InputArea = InputArea(Point(), Point())
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {}
         self.xbindkeys_config_string = ""
@@ -87,7 +87,7 @@ class BaseConfig(object):
            b:10
         """
 
-    def print_config(self, indent_level: int = 0, indent_spaces: int = 2):
+    def print_config(self, indent_level: int = 0, indent_spaces: int = 2) -> None:
         BaseConfig._print_dict(
             {"device_hint": self.device_hint_expression,
              "devices_input_area": self.device_input_area.to_dict(),

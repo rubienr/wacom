@@ -12,14 +12,14 @@ from src.xbindkeys_utils import xbindkeys_reload_config_from_disk, xbindkeys_kil
 
 
 class Env(object):
-    def __init__(self):
+    def __init__(self) -> None:
         self.script_abs_dir = os.path.dirname(__file__)
         self.configs_rel_path_name = "configs"
         self.tmp_files_abs_dir = self.script_abs_dir
 
 
 class Args(object):
-    def __init__(self, config_loader: ConfigLoader):
+    def __init__(self, config_loader: ConfigLoader) -> None:
         self.parser: argparse.ArgumentParser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
         sub_parsers = self.parser.add_subparsers(dest='command', title="command (required)", description="Run command with the loaded configuration.")
 
@@ -102,7 +102,7 @@ class Args(object):
 
 
 class Runner(object):
-    def __init__(self):
+    def __init__(self) -> None:
         self.env = Env()
         self.config_loader = ConfigLoader(self.env.script_abs_dir, self.env.configs_rel_path_name)
         self._cli_args = Args(self.config_loader)
@@ -164,13 +164,18 @@ class Runner(object):
             device: DeviceTypeName = DeviceTypeName[self.args.device]
             if self.args.curve:
                 try:
-                    curve = self.config.devices_parameters[device].args["PressureCurve"].split(" ")
-                    curve_points = ((curve[0], curve[1]), (curve[2], curve[3]))
+                    curve = self.config.devices_parameters[device].args["PressureCurve"][0].split(" ")
+                    curve_points = ((int(curve[0]), int(curve[1])), (int(curve[2]), int(curve[3])))
                     plot_pressure_curve(curve_points)
-                except:
+                except (Exception,):
                     print(f"WARNING: no curve configured for device '{self.args.device}'")
             if self.args.pressure:
-                plot_current_pressure(get_device_id(self.config.device_hint_expression, device))
+                device_id = get_device_id(self.config.device_hint_expression, device)
+                if device_id is not None:
+                    plot_current_pressure(device_id)
+                else:
+                    print(f"ERROR: failed to plot pressure of device '{self.args.device}'")
+                    assert False
 
         return 0
 

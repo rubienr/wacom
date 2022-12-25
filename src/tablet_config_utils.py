@@ -49,7 +49,7 @@ def print_all_device_parameters(device_id: str = None) -> None:
         dev_args = [' '.join(args) for args in get_all_device_parameters(device_id)]
 
         if len(dev_args) > 0:
-            print(f"\nfound {len(dev_args)} {name} device parameters for device_id={device_id}:", end="")
+            print(f"\nfound {len(dev_args)} {name} device parameters for device_id={device_id}:\n", end="")
             for arg_and_value in dev_args:
                 print(f"{arg_and_value}")
             print()
@@ -87,7 +87,10 @@ def configure_devices(config: BaseConfig, allowed_device_types: List[DeviceTypeN
     for device_type in [k for k in config.devices_parameters.keys()]:
         if DeviceTypeName.ANY in allowed_device_types or device_type in allowed_device_types:
             dev_id = get_device_id(config.device_hint_expression, device_type)
-            print(f"configure device '{device_type.value}' with device_id={dev_id}")
+            if dev_id is None:
+                print(f"WARING: skipping requested configuration of device type={device_type.value} with hint {config.device_hint_expression}")
+                continue
+            print(f"configure device type='{device_type.value}' with device_id={dev_id}")
             old_values = get_all_device_parameters(dev_id)
             set_device_parameters(dev_id, config.devices_parameters[device_type])
             new_values = get_all_device_parameters(dev_id)

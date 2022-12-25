@@ -6,7 +6,7 @@ from src.DeviceTypeName import DeviceTypeName
 from src.base_config import BaseConfig
 from src.base_config import DeviceParameters
 from src.geometry_types import Point, InputArea
-from src.tablet_utils import get_led_on_off_state
+from src.tablet_utils import get_active_led_number
 
 
 class TouchRingMode(Enum):
@@ -18,9 +18,9 @@ class TouchRingMode(Enum):
 
 
 class Config(BaseConfig):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        self.device_hint_expression: str = ".*Wacom Intuos Pro.*"
+        self.device_hint_expression: str = r".*Wacom Intuos Pro.*"
         self.device_input_area: InputArea = InputArea(Point(0, 0), Point(62200, 43200))
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {
             DeviceTypeName.PAD:
@@ -56,7 +56,7 @@ class Config(BaseConfig):
 "{os.path.join(BaseConfig.root_dir_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --map
 b:12
 
-# bind the wheel button to toggle a complete re-configuration of the pad depending on the LEDs state
+# bind the wheel button to trigger a complete re-configuration of the pad depending on the LEDs state
 "{os.path.join(BaseConfig.root_dir_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set"
 b:13
 """
@@ -73,7 +73,7 @@ b:13
             TouchRingMode.THREE: ("key left", "previous frame"),
             TouchRingMode.FOUR: ("key Down", "previous key frame"),
             TouchRingMode.UNDEFINED: ("", "in case device is not connected"),
-        }[Config._get_touch_ring_mode()]
+        }[TouchRingMode(get_active_led_number(TouchRingMode.UNDEFINED.value))]
 
     @staticmethod
     def get_abs_wheel_down_mode() -> Tuple[str, str]:
@@ -87,15 +87,4 @@ b:13
             TouchRingMode.THREE: ("key Right", "next frame"),
             TouchRingMode.FOUR: ("key Up", "next key frame"),
             TouchRingMode.UNDEFINED: ("", "in case device is not connected"),
-        }[Config._get_touch_ring_mode()]
-
-    @staticmethod
-    def _get_touch_ring_mode() -> TouchRingMode:
-        """
-        :return: First touch-ring LED found to be on.
-        """
-        states: Dict[int, bool] = get_led_on_off_state()
-        for led_nr, is_on in states.items():
-            if is_on:
-                return TouchRingMode(int(led_nr))
-        return TouchRingMode.UNDEFINED
+        }[TouchRingMode(get_active_led_number(TouchRingMode.UNDEFINED.value))]
