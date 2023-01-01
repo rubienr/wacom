@@ -1,41 +1,43 @@
 # Yet another Wacom Tool
 
-Since the Wacom configuration UIs in KDE Plasma and Gnome 2/3 are very limiting and provide only poor configuration ability, this tool allows achieving a Wacom board configuration beyond those
-limitations. It is based on `xsetwacom` and `XBindKeys`.
+This tool allows a Wacom configuration beyond the limitations of the Wacom configuration UIs in KDE Plasma and Gnome 2/3.
+
+It is based on `xsetwacom`, `XBindKeys`, `xinput` and `xrandr`.
 
 **Noteworthy features:**
 
-- cycle in-between screens
+- cycle in-between screens mappings
 - auto adjust Wacom input area to preserve the `width:height` ratio on the output display
+- LED-depending modes: can read the device LEDs status (if available) and map buttons accordingly
 - button events can be mapped to:
     - hot-keys (several keys pressed at once)
     - key sequence (to reset zoom and rotation in Krita: first press `5`, then release, then press `2`, then release)
     - scripts, commands
-- multiple configuration profiles
-- supports different models (not limited to Intuos Pro)
+- multiple configuration profiles (supports different models)
+- can handle multiple devices at the same time (i.e. Cintiq and Express Key remote)
 - plot current pen or eraser pressure as a live plot
 
-## Examples
+## Example: Intuos Pro L with three Displays
 
 ![usage example](./img/usage-illustration.png)
 
 ```bash
 # In most cases, if the configuration is set up correctly, this is enough:
 $ ./xsetwacom.py --config <your_config> bindkeys --start
-# To initially cofigure the device press the wheel/mode button once.
+# To initially configure the device press the wheel/mode button once.
 
 # The script starts xbindkeys which in turn will react on button events and trigger actions, i.e:
 # - cycle screens and
-# - cycle button modes (i.e. wheel button or any other arbitrary button).
+# - cycle button modes (wheel button or an arbitrary button; reads LED state).
 
-# Note: if the device is disconnected and re-attahed each button emmits default events. 
+# Note: if the device is disconnected and re-attached each button emits default events. 
 # For convenience, configurations are asked to react on the default events of
 # - the wheel/mode button and 
 # - the screen-cycle button.
 ```
 
 ```bash
-# To initially cofigure a device:
+# To initially configure a device:
 $ ./xsetwacom.py --config <your_config> device --set
 # If cycling through screens or cycling through button modes (i.e. wheel button) is not required this command is enough.
 ```
@@ -67,10 +69,13 @@ Configuration:
 
 ## Requirements
 
-- Python 3 - mandatory
-- `xsetwacom` - mandatory
-- `xrandr` - mandatory
-- `xbindkeys` - optional but highly recommended; required by `bindkeys` sub-command
+| Dependency  | Mandatory                | Description                                                                                          | 
+|-------------|--------------------------|------------------------------------------------------------------------------------------------------|
+| Python 3    | mandatory                |                                                                                                      |
+| `xsetwacom` | mandatory                |                                                                                                      |
+| `xrandr`    | mandatory                |                                                                                                      |
+| `xbindkeys` | optional but recommended | required by the `bindkeys` sub-command; only needed if script shall trigger commands on button press |
+| `xinput`    | optional                 |                                                                                                      |
 
 ## Aims and Non Aims
 
@@ -82,14 +87,14 @@ Configuration:
 ## Limitations
 
 ✗ only X11, no Wayland \
-✗ no Gnome Shell support ([github.com/linuxwacom/xf86-input-wacom/issues/289](github.com/linuxwacom/xf86-input-wacom/issues/289))
+✗ no Gnome-Shell support ([github.com/linuxwacom/xf86-input-wacom/issues/289](https://github.com/linuxwacom/xf86-input-wacom/issues/289))
 
 # Device Notes
 
 ## Intuos Pro L
 
-This device broadcasts two Bluetooth beacons. Both connections need to be paired 'LE Intuous Pro L' and 'BT Intuous Pro L'. In case of frequent disconnects or no battery level being reported remove
-both paired connections and pair the deivce again. First pair the LE then the BT connection. Once paired, connecting only to BT is sufficient.
+This device broadcasts two Bluetooth beacons. Both connections need to be paired 'LE Intuos Pro L' and 'BT Intuos Pro L'. In case of frequent disconnects or no battery level being reported remove
+both paired connections and pair the device again. First pair the LE then the BT connection. Once paired, connecting only to BT is sufficient.
 
 1. long press on touch circle button -> pair the LE connection, then
 2. long press on touch circle button -> pair the BT connection
@@ -98,11 +103,11 @@ both paired connections and pair the deivce again. First pair the LE then the BT
 
 This device can be connected in three ways:
 
-1. by Bletooth (LED lights blue)
+1. by Bluetooth (LED lights blue)
 2. by USB in Desktop Mode (LED lights bright white)
 3. by USB in Mobile Mode (LED lights dim white)
 
-If the device is connected by USB, the Intuos BT M needs to be switched to Descktop Mode, by bluetooth it works out of the box.
+If the device is connected by USB, the Intuos BT M needs to be switched to Desktop Mode, by bluetooth it works out of the box.
 
 To switch in between both USB modes press the **leftmost + rightmost buttons simultaneously** for about four seconds until the white LED goes off. For this step the USB cable must be connected.
 Unfortunately this step is poorly propagated and the last mode is not preserved or the mode is not detected correctly.

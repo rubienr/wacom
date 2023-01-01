@@ -10,7 +10,7 @@ from src.geometry_types import Point, InputArea
 class Config(BaseConfig):
     def __init__(self) -> None:
         super().__init__()
-        self.device_hint_expression: str = r".*Wacom Inutos BT.*"
+        self.device_hint_expression: str = r"^Wacom Inutos BT .*"
         self.device_input_area: InputArea = InputArea(Point(0, 0), Point(15200, 9500))
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {
             DeviceTypeName.PAD:

@@ -5,7 +5,8 @@ from typing import List, Tuple
 
 from src.DeviceTypeName import DeviceTypeName
 from src.base_config import BaseConfig, DeviceParameters
-from src.tablet_utils import get_devices_info, get_device_id
+from src.decorators import run_once
+from src.tablet_utils import get_devices_info, get_device_id, print_devices
 
 
 # ============================================================ section: run command
@@ -84,17 +85,38 @@ def configure_devices(config: BaseConfig, allowed_device_types: List[DeviceTypeN
     """
     allowed_device_types = [DeviceTypeName.ANY] if not allowed_device_types else allowed_device_types
 
+    print_devices()
+    print(f"configuring device hint='{config.device_hint_expression}', types={[d.name for d in allowed_device_types]}")
+
     for device_type in [k for k in config.devices_parameters.keys()]:
         if DeviceTypeName.ANY in allowed_device_types or device_type in allowed_device_types:
             dev_id = get_device_id(config.device_hint_expression, device_type)
             if dev_id is None:
-                print(f"WARING: skipping requested configuration of device type={device_type.value} with hint {config.device_hint_expression}")
+                print(f"  - WARING: skipping requested configuration of device type={device_type.value} with hint {config.device_hint_expression}")
                 continue
-            print(f"configure device type='{device_type.value}' with device_id={dev_id}")
+            print(f"  - configure device type='{device_type.value}' with device_id={dev_id}")
             old_values = get_all_device_parameters(dev_id)
             set_device_parameters(dev_id, config.devices_parameters[device_type])
             new_values = get_all_device_parameters(dev_id)
+            print("  - touched parameters (diff):")
             print_diff(old_values, new_values)
+
+
+def get_active_led_number(device_hint_expr: str, device_type: DeviceTypeName = DeviceTypeName.PAD, default_on_error: int = 99):
+    """
+    :param device_hint_expr: filter argument for the `xsetwacom list` device listing
+    :param device_type: filter argument
+    :param default_on_error: default LED number in case of error
+    :return: number of first touch-ring LED found to be on, -1 otherwise
+    """
+    devices_info = get_devices_info(device_hint_expr, [device_type], read_led_intensities=True)
+    assert 1 == len(devices_info)
+    return devices_info[0].leds_state.active_led_number(default_on_error)
+
+
+@run_once
+def get_active_led_number_once(device_hint_expr: str, device_type: DeviceTypeName = DeviceTypeName.PAD, default_on_error: int = 99):
+    return get_active_led_number(device_hint_expr, device_type=device_type, default_on_error=default_on_error)
 
 
 """

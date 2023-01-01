@@ -48,7 +48,6 @@ def get_display_geometries(verbose: bool = True) -> List[Geometry]:
         min_width_displacement, max_width_displacement = Geometry(), Geometry()
         min_height_displacement, max_height_displacement = Geometry(), Geometry()
 
-
         if len(geometries) == 2:
             # 1st geometry: left most display
             # 2nd geometry: right most display

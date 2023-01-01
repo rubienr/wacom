@@ -8,4 +8,4 @@ class DeviceTypeName(Enum):
     CURSOR = "CURSOR"
     TOUCH = "TOUCH"
     ANY = "ANY"
-    UNKDNOWN = "unknown"
+    UNKNOWN = "unknown"

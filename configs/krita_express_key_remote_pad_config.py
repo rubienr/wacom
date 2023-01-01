@@ -6,7 +6,7 @@ from src.DeviceTypeName import DeviceTypeName
 from src.base_config import BaseConfig
 from src.base_config import DeviceParameters
 from src.geometry_types import Point, InputArea
-from src.tablet_utils import get_active_led_number
+from src.tablet_config_utils import get_active_led_number_once
 
 
 class TouchRingMode(Enum):
@@ -23,8 +23,9 @@ Notes:
     ```bash
     find /sys/devices -regex ".*unpair_remote.*"
     /sys/devices/pci0000:00/0000:00:00.1/0000:01:00.1/usb1/5-2/5-2.1/1-2.1:1.0/0001:001:0001.0001/wacom_remote/unpair_remote
-    cd /sys/devices/pci0000:00/0000:00:00.1/0000:01:00.1/usb1/5-2/5-2.1/1-2.1:1.0/0001:001:0001.0001/wacom_remote/
-    sudo echo "*" > unpair_remote 
+    cd /sys/devices/pci0000:00/.../wacom_remote/
+    sudo su
+    echo "*" > unpair_remote 
     ``` 
 """
 
@@ -32,7 +33,7 @@ Notes:
 class Config(BaseConfig):
     def __init__(self) -> None:
         super().__init__()
-        self.device_hint_expression: str = r".*Wacom Express Key Remote Pad pad.*"
+        self.device_hint_expression: str = r"^Wacom Express Key Remote Pad .*"
         self.device_input_area: InputArea = InputArea(Point(0, 0), Point(95440, 53860))
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {
             DeviceTypeName.PAD:
@@ -47,8 +48,8 @@ class Config(BaseConfig):
                     "Button 1": ("button 23", "re-configure device"),  # center; default value "button 1" interferes with left mouse button
 
                     #  ⃔  ⃕ wheel up/down
-                    "AbsWheelUp": Config.get_abs_wheel_up_mode,  # call-able retrieving the corresponding mode according to the touch-ring LED state
-                    "AbsWheelDown": Config.get_abs_wheel_down_mode,  # call-able retrieving the corresponding mode according to the touch-ring LED state
+                    "AbsWheelUp": lambda: ConfigHelper.get_abs_wheel_up_mode(self.device_hint_expression),  # call-able retrieving the corresponding mode according to the touch-ring LED state
+                    "AbsWheelDown": lambda: ConfigHelper.get_abs_wheel_down_mode(self.device_hint_expression),  # call-able retrieving the corresponding mode according to the touch-ring LED state
 
                     # ↓  top, left outer row
                     "Button 11": ("key shift", "Shift"),
@@ -80,10 +81,13 @@ class Config(BaseConfig):
 b:23
 """
 
+
+class ConfigHelper(object):
+
     @staticmethod
-    def get_abs_wheel_up_mode() -> Tuple[str, str]:
+    def get_abs_wheel_up_mode(device_hint_expression: str) -> Tuple[str, str]:
         """
-        Wheel modes when turning/sliding left.
+        Wheel modes when turning wheel left.
         :return: key sequence (see man xsetwacom)
         """
         return {
@@ -91,12 +95,12 @@ b:23
             TouchRingMode.TWO: ("key +minus", "zoom out"),
             TouchRingMode.THREE: ("key +altgr 8 key +altgr 8 key +altgr 8", "decrease brush size"),
             TouchRingMode.UNDEFINED: ("button 5", "fallback"),
-        }[TouchRingMode(get_active_led_number(TouchRingMode.UNDEFINED.value))]
+        }[TouchRingMode(get_active_led_number_once(device_hint_expression, default_on_error=TouchRingMode.UNDEFINED.value))]
 
     @staticmethod
-    def get_abs_wheel_down_mode() -> Tuple[str, str]:
+    def get_abs_wheel_down_mode(device_hint_expression: str) -> Tuple[str, str]:
         """
-        Wheel modes when turning/sliding right.
+        Wheel modes when turning wheel right.
         :return: key sequence (see man xsetwacom)
         """
         return {
@@ -104,4 +108,4 @@ b:23
             TouchRingMode.TWO: ("key +plus", "zoom in"),
             TouchRingMode.THREE: ("key +altgr 9 key +altgr 9 key +altgr 9", "increase brush size"),
             TouchRingMode.UNDEFINED: ("button 4", "fallback"),
-        }[TouchRingMode(get_active_led_number(TouchRingMode.UNDEFINED.value))]
+        }[TouchRingMode(get_active_led_number_once(device_hint_expression, default_on_error=TouchRingMode.UNDEFINED.value))]

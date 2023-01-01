@@ -6,7 +6,7 @@ from src.DeviceTypeName import DeviceTypeName
 from src.base_config import BaseConfig
 from src.base_config import DeviceParameters
 from src.geometry_types import Point, InputArea
-from src.tablet_utils import get_active_led_number
+from src.tablet_config_utils import get_active_led_number_once
 
 
 class TouchRingMode(Enum):
@@ -20,7 +20,7 @@ class TouchRingMode(Enum):
 class Config(BaseConfig):
     def __init__(self) -> None:
         super().__init__()
-        self.device_hint_expression: str = r".*Wacom Intuos Pro.*"
+        self.device_hint_expression: str = r"^Wacom Intuos Pro .*"
         self.device_input_area: InputArea = InputArea(Point(0, 0), Point(62200, 43200))
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {
             DeviceTypeName.PAD:
@@ -40,8 +40,8 @@ class Config(BaseConfig):
                     "Button 11": ("key r", "reset tool"),
                     "Button 12": ("button 12", "map to next screen"),  # leave default in order to work with xbindkeys without prior configuration by `xsetwacom --config <cfg> configure device --set`
                     # ↑ bottom button
-                    "AbsWheelUp": Config.get_abs_wheel_up_mode,  # call-able retrieving the corresponding mode according to the touch-ring LED state
-                    "AbsWheelDown": Config.get_abs_wheel_down_mode,  # call-able retrieving the corresponding mode according to the touch-ring LED state
+                    "AbsWheelUp": lambda: ConfigHelper.get_abs_wheel_up_mode(self.device_hint_expression),  # call-able retrieving the corresponding mode according to the touch-ring LED state
+                    "AbsWheelDown": lambda: ConfigHelper.get_abs_wheel_down_mode(self.device_hint_expression),  # call-able retrieving the corresponding mode according to the touch-ring LED state
                 }),
             DeviceTypeName.STYLUS:
                 DeviceParameters({
@@ -63,10 +63,13 @@ b:12
 b:13
 """
 
+
+class ConfigHelper(object):
+
     @staticmethod
-    def get_abs_wheel_up_mode() -> Tuple[str, str]:
+    def get_abs_wheel_up_mode(device_hint_expression: str) -> Tuple[str, str]:
         """
-        Wheel modes when turning/sliding left.
+        Wheel modes when turning wheel left.
         :return: key sequence (see man xsetwacom)
         """
         return {
@@ -75,12 +78,12 @@ b:13
             TouchRingMode.THREE: ("key +altgr 8 key +altgr 8 key +altgr 8", "decrease brush size"),
             TouchRingMode.FOUR: ("key I", "increase opacity"),
             TouchRingMode.UNDEFINED: ("", "fallback in case device is not connected"),
-        }[TouchRingMode(get_active_led_number(TouchRingMode.UNDEFINED.value))]
+        }[TouchRingMode(get_active_led_number_once(device_hint_expression, default_on_error=TouchRingMode.UNDEFINED.value))]
 
     @staticmethod
-    def get_abs_wheel_down_mode() -> Tuple[str, str]:
+    def get_abs_wheel_down_mode(device_hint_expression: str) -> Tuple[str, str]:
         """
-        Wheel modes when turning/sliding right.
+        Wheel modes when turning wheel right.
         :return: key sequence (see man xsetwacom)
         """
         return {
@@ -89,4 +92,4 @@ b:13
             TouchRingMode.THREE: ("key +altgr 9 key +altgr 9 key +altgr 9", "increase brush size"),
             TouchRingMode.FOUR: ("key O", "decrease opacity"),
             TouchRingMode.UNDEFINED: ("", "fallback in case device is not connected"),
-        }[TouchRingMode(get_active_led_number(TouchRingMode.UNDEFINED.value))]
+        }[TouchRingMode(get_active_led_number_once(device_hint_expression, default_on_error=TouchRingMode.UNDEFINED.value))]
