@@ -69,13 +69,13 @@ Configuration:
 
 ## Requirements
 
-| Dependency  | Mandatory                | Description                                                                                          | 
-|-------------|--------------------------|------------------------------------------------------------------------------------------------------|
-| Python 3    | mandatory                |                                                                                                      |
-| `xsetwacom` | mandatory                |                                                                                                      |
-| `xrandr`    | mandatory                |                                                                                                      |
-| `xbindkeys` | optional but recommended | required by the `bindkeys` sub-command; only needed if script shall trigger commands on button press |
-| `xinput`    | optional                 |                                                                                                      |
+| Dependency  | Mandatory | Description                                                  | 
+|-------------|-----------|--------------------------------------------------------------|
+| Python 3    | mandatory | -                                                            |
+| `xsetwacom` | mandatory | detect devices; read/write device parameters                 |
+| `xrandr`    | optional  | to compute geometry and clipping (keep `width:height` ratio) |
+| `xbindkeys` | optional  | only needed if commands shall be triggered on button press   |
+| `xinput`    | optional  | to retrieve LED status: determine input device ID            |
 
 ## Aims and Non Aims
 
@@ -93,8 +93,8 @@ Configuration:
 
 ## Intuos Pro L
 
-This device broadcasts two Bluetooth beacons. Both connections need to be paired 'LE Intuos Pro L' and 'BT Intuos Pro L'. In case of frequent disconnects or no battery level being reported remove
-both paired connections and pair the device again. First pair the LE then the BT connection. Once paired, connecting only to BT is sufficient.
+This device broadcasts two Bluetooth beacons. Both connections need to be paired 'LE Intuos Pro L' and 'BT Intuos Pro L'. In case of frequent disconnects or no battery level being reported remove both
+paired connections and pair the device again. First pair the LE then the BT connection. Once paired, connecting only to BT is sufficient.
 
 1. long press on touch circle button -> pair the LE connection, then
 2. long press on touch circle button -> pair the BT connection
