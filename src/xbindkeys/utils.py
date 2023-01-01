@@ -1,14 +1,12 @@
 import os.path
 import subprocess
 
+from src.utils.subprocess import run_subprocess
 
-# ============================================================ section: run command
 
 def _run_subprocess(args: str, **kwargs) -> subprocess.CompletedProcess:
-    return subprocess.run(args, shell=True, text=True, **kwargs)
+    return run_subprocess(args, stdout=None, stderr=None, shell=True, text=True, **kwargs)
 
-
-# ============================================================ section: xbindkeys
 
 def xbindkeys_start(config: str, temp_dir: str, config_file_name=".xbindkeys-cfg.tmp", run_in_background: bool = False) -> None:
     """

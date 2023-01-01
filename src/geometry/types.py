@@ -50,7 +50,7 @@ class Geometry(object):
 
 
 class Point(object):
-    def __init__(self, x: int = 0, y: int = 0):
+    def __init__(self, x: int = 0, y: int = 0) -> None:
         self.x: int = x
         self.y: int = y
 
@@ -59,7 +59,7 @@ class Point(object):
 
 
 class SquareArea(object):
-    def __init__(self, top_left: Point, bottom_right: Point, width_displacement: int = 0, height_displacement: int = 0):
+    def __init__(self, top_left: Point, bottom_right: Point, width_displacement: int = 0, height_displacement: int = 0) -> None:
         self.top_left = top_left
         self.bottom_right = bottom_right
         self.width_displacement = width_displacement

@@ -1,9 +1,5 @@
-import os
 import re
-from typing import Dict, Union, Callable, Any, Tuple
-
-from src.DeviceTypeName import DeviceTypeName
-from src.geometry_types import InputArea, Point
+from typing import Dict, Union, Callable, Tuple
 
 CONFIG_FILE_MODULE_SUFFIX: str = "_config"
 PY_CONFIG_FILE_SUFFIX: str = f"{CONFIG_FILE_MODULE_SUFFIX}.py"
@@ -70,71 +66,3 @@ class DeviceParameters(object):
             if not any([re.match(known_arg, arg) for known_arg in self.known_args.keys()]):
                 print(f"WARNING: unknown argument '{arg}' detected")
         self._args = value
-
-
-class BaseConfig(object):
-
-    def __init__(self) -> None:
-        self.device_hint_expression: str = ""
-        """
-        - i.e. regex r"^Wacom Intuos Pro .*", 
-        - shall match the device as accurate as possible
-        - see `xsetwacom --list devices`
-        """
-        self.device_input_area: InputArea = InputArea(Point(), Point())
-        self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {}
-        self.xbindkeys_config_string = ""
-        """
-        Example:
-        
-        .. code-block:: bash 
-           # bind button 12 to toggle screens
-           "./xsetwacom.py --config <config_name> device --map next_fit"
-           b:12
-
-           # bind the wheel button to toggle in-between wheel modes
-           "./xsetwacom.py --config <config_name> device --set"
-           b:10
-        """
-
-    def print_config(self, indent_level: int = 0, indent_spaces: int = 2) -> None:
-        BaseConfig._print_dict(
-            {"device_hint": self.device_hint_expression,
-             "devices_input_area": self.device_input_area.to_dict(),
-             "devices_parameters": self.devices_parameters,
-             "xbindkeys": self.xbindkeys_config_string,
-             }, indent_level=indent_level, indent_spaces=indent_spaces)
-
-    @staticmethod
-    def _print_dict(container: Dict[str, Any], indent_level: int = 0, indent_spaces: int = 2) -> None:
-        indent = " " * indent_level * indent_spaces
-        for key, value in container.items():
-            if isinstance(value, str) or isinstance(value, int):
-                print(f"{indent}{key}: {value}")
-            elif isinstance(value, Tuple):
-                print(f"{indent}{key}: {value[0]} - {value[1]}")
-            elif callable(value):
-                evaluated = value()
-                print(f"{indent}{key}: {evaluated[0]} - {evaluated[1]}")
-            elif isinstance(value, dict):
-                print(f"{indent}{key}:")
-                BaseConfig._print_dict(container[key], indent_level=indent_level + 1, indent_spaces=indent_spaces)
-            elif isinstance(value, DeviceParameters):
-                print(f"{indent}{key}:")
-                BaseConfig._print_dict(container[key].args, indent_level=indent_level + 1, indent_spaces=indent_spaces)
-            else:
-                print(f"unexpected config value type: {type(value)}")
-                assert False
-
-    @staticmethod
-    def config_name_from_abs_filepath(file_path_with_py_extension: str) -> str:
-        return os.path.basename(file_path_with_py_extension).removesuffix(PY_CONFIG_FILE_SUFFIX)
-
-    @staticmethod
-    def root_dir_from_abs_filepath(config_file: str) -> str:
-        """
-        Returns the script root directory of xsetwacom.py.
-        :param config_file: __file__
-        :return: the root directory as seen from the configuration file
-        """
-        return os.path.join(os.path.dirname(config_file), "../")

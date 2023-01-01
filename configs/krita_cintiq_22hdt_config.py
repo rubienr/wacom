@@ -1,10 +1,10 @@
 import os.path
 from typing import Dict
 
-from src.DeviceTypeName import DeviceTypeName
-from src.base_config import BaseConfig
-from src.base_config import DeviceParameters
-from src.geometry_types import Point, InputArea
+from src.config.BaseConfig import BaseConfig
+from src.config.BaseConfig import DeviceParameters
+from src.geometry.types import Point, InputArea
+from src.wacom.DeviceTypeName import DeviceTypeName
 
 
 class Config(BaseConfig):

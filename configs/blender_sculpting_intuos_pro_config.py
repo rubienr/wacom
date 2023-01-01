@@ -2,11 +2,11 @@ import os
 from enum import Enum
 from typing import Dict, Tuple
 
-from src.DeviceTypeName import DeviceTypeName
-from src.base_config import BaseConfig
-from src.base_config import DeviceParameters
-from src.geometry_types import Point, InputArea
-from src.tablet_config_utils import get_active_led_number_once
+from src.config.BaseConfig import BaseConfig
+from src.config.BaseConfig import DeviceParameters
+from src.geometry.types import Point, InputArea
+from src.wacom.DeviceTypeName import DeviceTypeName
+from src.wacom.get import get_active_led_number_once
 
 
 class TouchRingMode(Enum):

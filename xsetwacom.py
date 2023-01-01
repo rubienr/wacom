@@ -1,14 +1,16 @@
 #!/bin/env python3
 import argparse
 import os
+from typing import Optional
 
-from src.ConfigLoader import ConfigLoader
-from src.DeviceTypeName import DeviceTypeName
-from src.base_config import BaseConfig
-from src.geometry_utils import AreaToOutputMappingMode, map_area_to_output
-from src.tablet_config_utils import configure_devices, print_all_device_parameters
-from src.tablet_utils import print_devices, plot_pressure_curve, plot_current_pressure, get_device_id, get_devices_id
-from src.xbindkeys_utils import xbindkeys_reload_config_from_disk, xbindkeys_killall, xbindkeys_start
+from src.config.BaseConfig import BaseConfig
+from src.config.ConfigLoader import ConfigLoader
+from src.geometry.utils import AreaToOutputMappingMode, map_area_to_output
+from src.wacom.DeviceTypeName import DeviceTypeName
+from src.wacom.get import get_device_id, get_devices_id, print_all_device_parameters, print_devices
+from src.wacom.plot import plot_current_pressure, plot_pressure_curve
+from src.wacom.set import configure_devices
+from src.xbindkeys.utils import xbindkeys_reload_config_from_disk, xbindkeys_killall, xbindkeys_start
 
 
 class Env(object):
@@ -104,9 +106,9 @@ class Args(object):
 class Runner(object):
     def __init__(self) -> None:
         self.env = Env()
-        self.config_loader = ConfigLoader(self.env.script_abs_dir, self.env.configs_rel_path_name)
-        self._cli_args = Args(self.config_loader)
-        self._config = None
+        self.config_loader: ConfigLoader = ConfigLoader(self.env.script_abs_dir, self.env.configs_rel_path_name)
+        self._cli_args: Args = Args(self.config_loader)
+        self._config: Optional[BaseConfig] = None
 
     @property
     def args(self):

@@ -1,13 +1,13 @@
 import os.path
 import pickle
 import re
-import subprocess
 from enum import Enum
 from typing import List, Optional, Tuple
 
-from src.DeviceTypeName import DeviceTypeName
-from src.geometry_types import Geometry, InputArea, Point
-from src.tablet_utils import get_devices_info
+from src.geometry.types import Geometry, InputArea, Point
+from src.utils.subprocess import lines_from_stream, run_subprocess
+from src.wacom.DeviceTypeName import DeviceTypeName
+from src.wacom.get import get_devices_info
 
 
 class AreaToOutputMappingMode(Enum):
@@ -16,20 +16,8 @@ class AreaToOutputMappingMode(Enum):
     UNKNOWN = 3,
 
 
-# ============================================================ section: run command
-
-def _run_subprocess(args, **kwargs) -> subprocess.CompletedProcess:
-    return subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, **kwargs)
-
-
-def _lines_from_stream(lines_stream):
-    return str(lines_stream.strip()).split('\n') if len(lines_stream) > 0 else []
-
-
-# ============================================================ section: geometry
-
 def get_display_geometries(verbose: bool = True) -> List[Geometry]:
-    lines = _lines_from_stream(_run_subprocess("xrandr --listactivemonitors").stdout)
+    lines = lines_from_stream(run_subprocess("xrandr --listactivemonitors").stdout)
     geometries = []
 
     for line in lines:
@@ -158,9 +146,9 @@ def _xsetwacom_set(device_id: str, args: str, verbose: bool = True) -> None:
     command = f"xsetwacom --set {device_id.strip()} {args.strip()}"
     if verbose:
         print(command)
-    process = _run_subprocess(command, check=True)
-    lines_stdout = _lines_from_stream(process.stdout)
-    lines_stderr = _lines_from_stream(process.stderr)
+    process = run_subprocess(command, check=True)
+    lines_stdout = lines_from_stream(process.stdout)
+    lines_stderr = lines_from_stream(process.stderr)
     for line in lines_stdout + lines_stderr:
         print(line)
 
@@ -168,7 +156,7 @@ def _xsetwacom_set(device_id: str, args: str, verbose: bool = True) -> None:
     assert len(lines_stderr) == 0
 
 
-def _set_input_area_and_output_mapping(device_hint_expression: str, input_area: InputArea, output_geometry: Geometry):
+def _set_input_area_and_output_mapping(device_hint_expression: str, input_area: InputArea, output_geometry: Geometry) -> None:
     print(f"map device input area: {input_area.to_dict()}")
     print(f"of device: {device_hint_expression}")
     print(f"to display output geometry: {output_geometry.to_dict()}")
