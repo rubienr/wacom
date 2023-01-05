@@ -4,7 +4,6 @@ from typing import Dict, Tuple
 
 from src.config.BaseConfig import BaseConfig
 from src.config.BaseConfig import DeviceParameters
-from src.geometry.types import Point, InputArea
 from src.wacom.DeviceTypeName import DeviceTypeName
 from src.wacom.get import get_active_led_number_once
 

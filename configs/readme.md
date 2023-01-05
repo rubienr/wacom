@@ -16,7 +16,7 @@ known configs:
 
 New config how-to:
 
-1. Duplicate a working configuration. 
+1. Duplicate a working configuration.
 2. Always derive the configuration class from `BaseConfig` and name it `Config` (mandatory)
 3. Modify the configuration.
 4. Test:
