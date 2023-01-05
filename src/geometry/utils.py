@@ -33,29 +33,29 @@ def get_display_geometries(verbose: bool = True) -> List[Geometry]:
                          width_displacement_px=int(re_match.group(6)), height_displacement_px=int(re_match.group(7)),
                          idx=re_match.group(1), name=re_match.group(8)))
 
-        min_width_displacement, max_width_displacement = Geometry(), Geometry()
-        min_height_displacement, max_height_displacement = Geometry(), Geometry()
+    min_width_displacement, max_width_displacement = Geometry(), Geometry()
+    min_height_displacement, max_height_displacement = Geometry(), Geometry()
 
-        if len(geometries) == 2:
-            # 1st geometry: left most display
-            # 2nd geometry: right most display
-            # 3rd geometry: left + right display; works only with 2 horizontally or vertically aligned displays and same size
-            for geometry in geometries:
-                if geometry.width_displacement_px > min_width_displacement.width_displacement_px:
-                    max_width_displacement = geometry
-                elif geometry.width_displacement_px < max_width_displacement.width_displacement_px:
-                    min_width_displacement = geometry
+    if len(geometries) == 2:
+        # 1st geometry: left most display
+        # 2nd geometry: right most display
+        # 3rd geometry: left + right display; works only with 2 horizontally or vertically aligned displays and same size
+        for geometry in geometries:
+            if geometry.width_displacement_px > min_width_displacement.width_displacement_px:
+                max_width_displacement = geometry
+            elif geometry.width_displacement_px < max_width_displacement.width_displacement_px:
+                min_width_displacement = geometry
 
-                if geometry.height_displacement_px > min_height_displacement.height_displacement_px:
-                    max_height_displacement = geometry
-                elif geometry.height_displacement_px < max_height_displacement.height_displacement_px:
-                    min_height_displacement = geometry
+            if geometry.height_displacement_px > min_height_displacement.height_displacement_px:
+                max_height_displacement = geometry
+            elif geometry.height_displacement_px < max_height_displacement.height_displacement_px:
+                min_height_displacement = geometry
 
-            geometries.append(Geometry(width_px=(max_width_displacement.width_displacement_px + max_width_displacement.width_px) - min_width_displacement.width_displacement_px,
-                                       height_px=(max_height_displacement.height_displacement_px + max_width_displacement.height_px) - min_height_displacement.height_displacement_px,
-                                       width_mm=-1, height_mm=-1,
-                                       width_displacement_px=0, height_displacement_px=0,
-                                       idx=len(geometries), name="virtual-geometry"))
+        geometries.append(Geometry(width_px=(max_width_displacement.width_displacement_px + max_width_displacement.width_px) - min_width_displacement.width_displacement_px,
+                                   height_px=(max_height_displacement.height_displacement_px + max_width_displacement.height_px) - min_height_displacement.height_displacement_px,
+                                   width_mm=-1, height_mm=-1,
+                                   width_displacement_px=0, height_displacement_px=0,
+                                   idx=len(geometries), name="virtual-geometry"))
 
     if verbose:
         print("detected geometries:")
@@ -161,11 +161,11 @@ def _set_input_area_and_output_mapping(device_hint_expression: str, input_area: 
     print(f"of device: {device_hint_expression}")
     print(f"to display output geometry: {output_geometry.to_dict()}")
 
-    for device_id, _device_type, _info in get_devices_info(device_hint_expression, [DeviceTypeName.STYLUS, DeviceTypeName.ERASER, DeviceTypeName.TOUCH]):
+    for device_info in get_devices_info(device_hint_expression, [DeviceTypeName.STYLUS, DeviceTypeName.ERASER, DeviceTypeName.TOUCH]):
         area_args = f"Area {input_area.top_left.x} {input_area.top_left.y} {input_area.bottom_right.x} {input_area.bottom_right.y}"
         output_args = f"MapToOutput {output_geometry.width_px}x{output_geometry.height_px}{output_geometry.width_displacement_signed_str}{output_geometry.height_displacement_signed_str}"
-        _xsetwacom_set(device_id, area_args)
-        _xsetwacom_set(device_id, output_args)
+        _xsetwacom_set(device_info.dev_id, area_args)
+        _xsetwacom_set(device_info.dev_id, output_args)
 
 
 def map_area_to_output(device_hint_expression: str, device_input_area: InputArea, mode: AreaToOutputMappingMode, temp_file_abs_path: str) -> None:
