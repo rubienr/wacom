@@ -19,7 +19,7 @@ class TouchRingMode(Enum):
 
 class Config(BaseConfig):
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__(file_path_name=__file__)
         self.device_hint_expression: str = r"^Wacom Intuos Pro .*"
         self.device_input_area: InputArea = InputArea(Point(0, 0), Point(62200, 43200))
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {
@@ -53,11 +53,11 @@ class Config(BaseConfig):
 
         self.xbindkeys_config_string = f"""
 # bind button 12 to toggle screens/geometry
-"{os.path.join(BaseConfig.root_dir_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --map
+"{os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --map
 b:12
 
 # bind the wheel button to trigger a complete re-configuration of the pad depending on the LEDs state
-"{os.path.join(BaseConfig.root_dir_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set"
+"{os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set"
 b:13
 """
 

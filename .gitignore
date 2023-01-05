@@ -1,5 +1,7 @@
 .idea
 **/__pycache__
-.geometry.tmp
-.xbindkeys-cfg.tmp
-.*.kra-autosave.kra
+
+.tmp/*
+!./tmp/.keep
+
+**/*.kra-autosave.kra

@@ -9,7 +9,7 @@ from src.wacom.DeviceTypeName import DeviceTypeName
 
 class Config(BaseConfig):
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__(file_path_name=__file__)
         self.device_hint_expression: str = r"^Wacom Inutos BT .*"
         self.device_input_area: InputArea = InputArea(Point(0, 0), Point(15200, 9500))
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {
@@ -32,7 +32,7 @@ class Config(BaseConfig):
 
         self.xbindkeys_config_string = f"""
 # bind button 8 to set all parameters and then cycle screens
-"{os.path.join(BaseConfig.root_dir_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set &&\
- {os.path.join(BaseConfig.root_dir_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --map"
+"{os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set &&\
+ {os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --map"
 b:8
 """

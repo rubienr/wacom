@@ -14,13 +14,14 @@ class BaseConfig(object):
     Base class each configuration profile must derive from.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, file_path_name: str = __file__) -> None:
         self.device_hint_expression: str = ""
         """
         - i.e. regex r"^Wacom Intuos Pro .*", 
         - shall match the device as accurate as possible
         - see `xsetwacom --list devices`
         """
+        self.file_path_name: str = file_path_name
         self.device_input_area: InputArea = InputArea(Point(), Point())
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {}
         self.xbindkeys_config_string = ""
@@ -68,13 +69,39 @@ class BaseConfig(object):
 
     @staticmethod
     def config_name_from_abs_filepath(file_path_with_py_extension: str) -> str:
+        """
+        Returns the config name from file path.
+        :param file_path_with_py_extension: path as reported by `__file__`
+        :return: the configuration name
+        """
         return os.path.basename(file_path_with_py_extension).removesuffix(PY_CONFIG_FILE_SUFFIX)
 
     @staticmethod
-    def root_dir_from_abs_filepath(config_file: str) -> str:
+    def root_path_from_abs_filepath(config_file: str) -> str:
         """
         Returns the script root directory of xsetwacom.py.
         :param config_file: __file__
         :return: the root directory as seen from the configuration file
         """
         return os.path.join(os.path.dirname(config_file), "../")
+
+    @property
+    def file_path(self) -> str:
+        """
+        :return: absolute path to configuration file
+        """
+        return os.path.dirname(self.file_path_name)
+
+    @property
+    def file_name(self) -> str:
+        """
+        :return: the configuration file name inclusive suffix; i.e. xxx_yyy_zzz_config.py
+        """
+        return os.path.basename(self.file_path_name)
+
+    @property
+    def name(self) -> str:
+        """
+        :return: the configuration file name without suffix; i.e. xxx_yyy_zzz if the configuration file is xxx_yyy_zzz_config.py
+        """
+        return BaseConfig.config_name_from_abs_filepath(self.file_path_name)

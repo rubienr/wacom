@@ -32,9 +32,8 @@ Notes:
 
 class Config(BaseConfig):
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__(file_path_name=__file__)
         self.device_hint_expression: str = r"^Wacom Express Key Remote Pad .*"
-        self.device_input_area: InputArea = InputArea(Point(0, 0), Point(0, 0))
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {
             DeviceTypeName.PAD:
                 DeviceParameters({
@@ -77,7 +76,7 @@ class Config(BaseConfig):
 
         self.xbindkeys_config_string = f"""
 # bind button "23" to trigger a complete re-configuration of the pad depending on the LEDs state
-"{os.path.join(BaseConfig.root_dir_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set"
+"{os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set"
 b:23
 """
 

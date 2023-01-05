@@ -66,8 +66,8 @@ def get_display_geometries(verbose: bool = True) -> List[Geometry]:
     return geometries
 
 
-def _next_geometry(temp_file_abs_path: str, temp_file_name: str = ".geometry.tmp") -> Geometry:
-    file_name = os.path.join(temp_file_abs_path, temp_file_name)
+def _next_geometry(temp_file_abs_path: str, temp_file_name: str, temp_file_suffix: str = ".geometry") -> Geometry:
+    file_name = os.path.join(temp_file_abs_path, temp_file_name + temp_file_suffix)
 
     try:
         print(f"reading last geometry from '{file_name}' ...")
@@ -168,8 +168,8 @@ def _set_input_area_and_output_mapping(device_hint_expression: str, input_area: 
         _xsetwacom_set(device_info.dev_id, output_args)
 
 
-def map_area_to_output(device_hint_expression: str, device_input_area: InputArea, mode: AreaToOutputMappingMode, temp_file_abs_path: str) -> None:
-    geometry: Geometry = _next_geometry(temp_file_abs_path)
+def map_area_to_output(device_hint_expression: str, device_input_area: InputArea, mode: AreaToOutputMappingMode, temp_file_abs_path: str, temp_file_name: str) -> None:
+    geometry: Geometry = _next_geometry(temp_file_abs_path=temp_file_abs_path, temp_file_name=temp_file_name)
 
     if mode == AreaToOutputMappingMode.FULL_INPUT_AREA_FULL_DISPLAY:
         input_area, output_geometry = _compute_map_full_input_area_to_full_output(device_input_area, geometry)

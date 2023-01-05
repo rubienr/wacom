@@ -8,16 +8,17 @@ def _run_subprocess(args: str, **kwargs) -> subprocess.CompletedProcess:
     return run_subprocess(args, stdout=None, stderr=None, shell=True, text=True, **kwargs)
 
 
-def xbindkeys_start(config: str, temp_dir: str, config_file_name=".xbindkeys-cfg.tmp", run_in_background: bool = False) -> None:
+def xbindkeys_start(config: str, temp_path: str, config_file_name: str, config_file_suffix: str = ".xbindkeys-cfg", run_in_background: bool = False) -> None:
     """
     Start `xbindkeys` with given configuration and run in foreground or background.
 
     :param config: configuration for `xbindkeys`
-    :param temp_dir: directory where to temporarily store the configuration file for `xbindkeys`
+    :param temp_path: directory where to temporarily store the configuration file for `xbindkeys`
     :param config_file_name: temporary config file name
+    :param config_file_suffix: suffix for config file
     :param run_in_background: False: run in foreground; True: run in background
     """
-    file_path_name = os.path.join(temp_dir, config_file_name)
+    file_path_name = os.path.join(temp_path, config_file_name + config_file_suffix)
     with open(file_path_name, "w+b") as xbindkeys_cfg:
         xbindkeys_cfg.write(config.encode())
 

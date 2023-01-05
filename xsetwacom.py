@@ -15,9 +15,9 @@ from src.xbindkeys.utils import xbindkeys_reload_config_from_disk, xbindkeys_kil
 
 class Env(object):
     def __init__(self) -> None:
-        self.script_abs_dir = os.path.dirname(__file__)
+        self.script_abs_path = os.path.dirname(__file__)
         self.configs_rel_path_name = "configs"
-        self.tmp_files_abs_dir = self.script_abs_dir
+        self.tmp_files_abs_path = os.path.join(self.script_abs_path, ".tmp")
 
 
 class Args(object):
@@ -106,7 +106,7 @@ class Args(object):
 class Runner(object):
     def __init__(self) -> None:
         self.env = Env()
-        self.config_loader: ConfigLoader = ConfigLoader(self.env.script_abs_dir, self.env.configs_rel_path_name)
+        self.config_loader: ConfigLoader = ConfigLoader(self.env.script_abs_path, self.env.configs_rel_path_name)
         self._cli_args: Args = Args(self.config_loader)
         self._config: Optional[BaseConfig] = None
 
@@ -135,7 +135,7 @@ class Runner(object):
             if self.args.list:
                 print("known configs:")
                 for config_name in self.config_loader.config_names():
-                    print(f"  - {config_name.config_name} in {os.path.join(self.env.script_abs_dir, self.env.configs_rel_path_name)}")
+                    print(f"  - {config_name.config_name} in {os.path.join(self.env.script_abs_path, self.env.configs_rel_path_name)}")
             if self.args.print:
                 self.config.print_config()
 
@@ -145,18 +145,26 @@ class Runner(object):
             if self.args.set:
                 configure_devices(self.config)
             if self.args.map_full:
-                map_area_to_output(self.config.device_hint_expression, self.config.device_input_area, AreaToOutputMappingMode.FULL_INPUT_AREA_FULL_DISPLAY, self.env.tmp_files_abs_dir)
+                map_area_to_output(device_hint_expression=self.config.device_hint_expression,
+                                   device_input_area=self.config.device_input_area,
+                                   mode=AreaToOutputMappingMode.FULL_INPUT_AREA_FULL_DISPLAY,
+                                   temp_file_abs_path=self.env.tmp_files_abs_path,
+                                   temp_file_name=self.config.name)
             if self.args.map:
-                map_area_to_output(self.config.device_hint_expression, self.config.device_input_area, AreaToOutputMappingMode.TRIMMED_INPUT_AREA_FULL_DISPLAY, self.env.tmp_files_abs_dir)
+                map_area_to_output(device_hint_expression=self.config.device_hint_expression,
+                                   device_input_area=self.config.device_input_area,
+                                   mode=AreaToOutputMappingMode.TRIMMED_INPUT_AREA_FULL_DISPLAY,
+                                   temp_file_abs_path=self.env.tmp_files_abs_path,
+                                   temp_file_name=self.config.name)
             if self.args.parameter:
                 device_id = None if self.args.parameter == "-" else self.args.parameter
                 print_all_device_parameters(device_id)
 
         if self.args.command == "bindkeys":
             if self.args.start:
-                xbindkeys_start(self.config.xbindkeys_config_string, self.env.tmp_files_abs_dir)
+                xbindkeys_start(config=self.config.xbindkeys_config_string, temp_path=self.env.tmp_files_abs_path, config_file_name=self.config.name)
             if self.args.background:
-                xbindkeys_start(self.config.xbindkeys_config_string, self.env.tmp_files_abs_dir, run_in_background=True)
+                xbindkeys_start(config=self.config.xbindkeys_config_string, temp_path=self.env.tmp_files_abs_path, config_file_name=self.config.name, run_in_background=True)
             if self.args.reload:
                 xbindkeys_reload_config_from_disk()
             if self.args.kill:
