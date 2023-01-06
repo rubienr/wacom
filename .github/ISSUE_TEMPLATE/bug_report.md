@@ -56,7 +56,8 @@ If applicable, add screenshots or logs to help explain your problem.
 Example script:
 ```bash
 lsb_release -a
-echo "xsetwacom:" && xsetwacom --version
+echo -en "xsetwacom: " && xsetwacom --version
+xinput --version
 xrandr --version
 python --version 
 ```
@@ -67,8 +68,9 @@ Distributor ID:	Ubuntu
 Description:	Ubuntu 22.10
 Release:	22.10
 Codename:	kinetic
-xsetwacom:
-1.0.0
+xsetwacom: 1.0.0
+xinput version 1.6.3
+XI version on server: 2.4
 xrandr program version       1.5.1
 Server reports RandR version 1.6
 Python 3.10.7
