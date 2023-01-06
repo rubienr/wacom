@@ -1,19 +1,22 @@
 # Yet another Wacom Tool
 
-This tool allows a Wacom configuration beyond the limitations of the Wacom configuration UIs in KDE Plasma and Gnome 2/3.
+This tool allows a Wacom configuration beyond the limitations of the Wacom configuration UIs in KDE Plasma and Gnome 2/3 or similar.
 
 It is based on `xsetwacom`, `XBindKeys`, `xinput` and `xrandr`.
 
 **Noteworthy features:**
 
-- cycle in-between screens mappings
-- auto adjust Wacom input area to preserve the `width:height` ratio on the output display
-- LED-depending modes: can read the device LEDs status (if available) and map buttons accordingly
+- cycle mapping in-between screens
+- auto adjust input area to preserve the `width:height` ratio on the display
+- modes: maps device button(s) (if any) according to the mode state
+  - LED-dependent mode: read the device LEDs (if any)
+  - LED-independent mode(s): read mode state from persistence file
+    - supports multiple user defined modes, i.e.: toggle touch, switch button mapping, ...
 - button events can be mapped to:
-    - hot-keys (several keys pressed at once)
-    - key sequence (to reset zoom and rotation in Krita: first press `5`, then release, then press `2`, then release)
-    - scripts, commands
-- multiple configuration profiles (supports different models)
+  - hot-keys (several keys pressed at once)
+  - key sequence (i.e. reset zoom and rotation in Krita: first press `5`, then release `5`, then press `2`, then release `2`)
+  - scripts, commands
+- multiple configuration profiles: different models, per applictation profile ...
 - can handle multiple devices at the same time (i.e. Cintiq and Express Key remote)
 - plot current pen or eraser pressure as a live plot
 
