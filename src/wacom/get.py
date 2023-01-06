@@ -1,6 +1,6 @@
 import os
 import re
-from typing import List, Optional
+from typing import List, Optional, Callable
 
 from src.utils.decorators import run_once
 from src.utils.subprocess import lines_from_stream, run_subprocess
@@ -27,7 +27,9 @@ def _filter_device_node_from_xinput_device_properties(properties: List[str]) -> 
     return None
 
 
-def get_devices_info(device_hint_expr: str = ".*", device_types: Optional[List[DeviceTypeName]] = None, read_led_intensities: bool = False) -> List[DeviceInfo]:
+def get_devices_info(device_hint_expr: str = ".*",
+                     device_types: Optional[List[DeviceTypeName]] = None,
+                     led_intensity_reader: Optional[Callable[[str], List[int]]] = None) -> List[DeviceInfo]:
     """
     Parses device info from `xsetwacom` and tries to determine the LED brightness (if supported by device).
         parse device info from `xsetwacom` output:
@@ -38,7 +40,12 @@ def get_devices_info(device_hint_expr: str = ".*", device_types: Optional[List[D
            Wacom Intuos Pro L Pen stylus   	id: 13	type: STYLUS
            Wacom Intuos Pro L Pen eraser   	id: 14	type: ERASER
            Wacom Intuos Pro L Pad pad      	id: 18	type: PAD
-        """
+
+    :param device_hint_expr:
+    :param device_types:
+    :param led_intensity_reader: optional callable to retrieve the LEDs status, None to skip this step
+    :return:
+    """
     requested_device_types = [DeviceTypeName.ANY] if not device_types else device_types
     all_xsetwacom_devices = [line for line in _run_list_devices()]
     xsetwacom_devices = [re.sub(r"\s+", " ", device.strip()) for device in all_xsetwacom_devices if re.search(device_hint_expr, device) is not None]
@@ -50,10 +57,7 @@ def get_devices_info(device_hint_expr: str = ".*", device_types: Optional[List[D
             dev_name, dev_id, dev_type = re.sub(r"\s+", " ", re_match.group(1).strip()), re_match.group(2), DeviceTypeName(re_match.group(3))
             if dev_type in requested_device_types or DeviceTypeName.ANY in requested_device_types:
                 logical_name = _filter_device_node_from_xinput_device_properties(_get_xinput_device_properties(dev_id))
-                if read_led_intensities:
-                    intensities = read_leds_brightness(logical_name)
-                else:
-                    intensities = []
+                intensities = led_intensity_reader(logical_name) if led_intensity_reader is not None else []
                 devices_info.append(DeviceInfo(
                     dev_id,
                     dev_type,
@@ -88,21 +92,28 @@ def get_device_id(device_hint_expr: str, device_type: Optional[DeviceTypeName] =
     return ids[0] if len(ids) > 0 else None
 
 
-def get_active_led_number(device_hint_expr: str, device_type: DeviceTypeName = DeviceTypeName.PAD, default_on_error: int = 99):
+def get_active_led_number(device_hint_expr: str,
+                          device_type: DeviceTypeName = DeviceTypeName.PAD,
+                          default_on_error: int = 99,
+                          led_intensity_reader: Callable[[str], List[int]] = read_leds_brightness) -> int:
     """
     :param device_hint_expr: filter argument for the `xsetwacom list` device listing
     :param device_type: filter argument
     :param default_on_error: default LED number in case of error
-    :return: number of first touch-ring LED found to be on, -1 otherwise
+    :param led_intensity_reader: LED status reader implementation
+    :return: number of first touch-ring LED found to be on, default_on_error otherwise
     """
-    devices_info = get_devices_info(device_hint_expr, [device_type], read_led_intensities=True)
+    devices_info = get_devices_info(device_hint_expr, [device_type], led_intensity_reader=led_intensity_reader)
     assert 1 == len(devices_info)
     return devices_info[0].leds_state.active_led_number(default_on_error)
 
 
 @run_once
-def get_active_led_number_once(device_hint_expr: str, device_type: DeviceTypeName = DeviceTypeName.PAD, default_on_error: int = 99):
-    return get_active_led_number(device_hint_expr, device_type=device_type, default_on_error=default_on_error)
+def get_active_led_number_once(device_hint_expr: str,
+                               device_type: DeviceTypeName = DeviceTypeName.PAD,
+                               default_on_error: int = 99,
+                               led_intensity_reader: Callable[[str], List[int]] = read_leds_brightness) -> int:
+    return get_active_led_number(device_hint_expr, device_type=device_type, default_on_error=default_on_error, led_intensity_reader=led_intensity_reader)
 
 
 def get_device_parameter(device_id: str, parameter_name: str) -> str:

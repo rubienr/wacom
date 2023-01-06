@@ -2,6 +2,7 @@ import os
 from typing import Dict, Any, Tuple
 
 from src.config.DeviceParameters import DeviceParameters
+from src.config.Modes import Mode
 from src.geometry.types import InputArea, Point
 from src.wacom.DeviceTypeName import DeviceTypeName
 
@@ -24,6 +25,12 @@ class BaseConfig(object):
         self.file_path_name: str = file_path_name
         self.device_input_area: InputArea = InputArea(Point(), Point())
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {}
+        self.modes: Dict[str, Mode] = {}
+        """
+        additional LED independent modes can be defined here, i.e.
+        - devices without touch ring LEDs have no modes: this can simulate multiple modes
+        - devices with touch: quicly switch touch on/off
+        """
         self.xbindkeys_config_string = ""
         """
         Example:

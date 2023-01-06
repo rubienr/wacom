@@ -7,9 +7,9 @@ from src.config.BaseConfig import BaseConfig, PY_CONFIG_FILE_SUFFIX, CONFIG_FILE
 
 class ConfigName(object):
     def __init__(self, base_path: str, file_name: str) -> None:
-        self.config_name = file_name.removesuffix(PY_CONFIG_FILE_SUFFIX)
-        self.base_path = base_path
-        self.file_name = file_name
+        self.config_name: str = file_name.removesuffix(PY_CONFIG_FILE_SUFFIX)
+        self.base_path: str = base_path
+        self.file_name: str = file_name
 
 
 class ConfigLoader(object):
@@ -17,9 +17,9 @@ class ConfigLoader(object):
     Class to load configuration from file.
     """
 
-    def __init__(self, path_to_config_folder: str, config_folder_name: str) -> None:
-        self.path_to_config_folder = path_to_config_folder
-        self.package_name = config_folder_name
+    def __init__(self, path_to_config: str, config_name: str) -> None:
+        self.path_to_config_folder = path_to_config
+        self.package_name = config_name
         self.config_path = os.path.join(self.path_to_config_folder, self.package_name)
         self.config: Optional[BaseConfig] = None
 
