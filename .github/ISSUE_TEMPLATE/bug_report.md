@@ -25,7 +25,8 @@ Stylus and Touch devices do not necessarily share the same resolution.
 **How To Reproduce**
 
 <!--
-Exlain in normal lanugage; you can use Gherkin-alike syntax if you like.
+Explain in natural lanugage; if you like use Gherkin-alike syntax.
+
 Example: 
 1. GIVEN I use Cintiq 22HDT
 1. GIVEN I checked out branch master
