@@ -16,7 +16,7 @@ It is based on `xsetwacom`, `XBindKeys`, `xinput` and `xrandr`.
   - hot-keys (several keys pressed at once)
   - key sequence (i.e. reset zoom and rotation in Krita: first press `5`, then release `5`, then press `2`, then release `2`)
   - scripts, commands
-- multiple configuration profiles: different models, per applictation profile ...
+- multiple configuration profiles: different models, per application profile ...
 - can handle multiple devices at the same time (i.e. Cintiq and Express Key remote)
 - plot current pen or eraser pressure as a live plot
 
