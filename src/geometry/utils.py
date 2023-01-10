@@ -163,7 +163,7 @@ def map_input_areas_to_output(device_hint_expression: str,
     device_types: List[DeviceTypeName] = [key for key in device_input_areas.keys()]
     print(f"mapping device input area of '{device_hint_expression}' for types {[t.name for t in device_types]} to display with strategy {mode.name} "
           f"and {'overridden' if device_calibration_overrides_config_input_area else 'configured'} input 'Area':")
-    print("  - read default device input area: reset values")
+    print("  - fetch attached devices' info")
 
     devices_info = get_devices_info(device_hint_expression, device_types=device_types, reset_device_and_read_input_area=device_calibration_overrides_config_input_area)
     device_input_areas_by_type = {}
