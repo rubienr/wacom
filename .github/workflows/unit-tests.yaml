@@ -40,17 +40,15 @@ jobs:
           sudo apt --yes install python3-pytest pylint
           sudo apt --yes install --only-upgrade python3-pytest pylint
 
-      - name: versions
+      - name: Versions
         run: |
           python --version
           pytest-3 --version
-
-      - name: Running tests
-        run: |
-          cd test
-          pytest-3
           echo "Pylint:"
           pylint --version
+
+      - name: Running tests
+        run: pytest-3
 
       - name: Pylint - configs
         if: success() || failure()
