@@ -1,6 +1,6 @@
 import os
 import re
-from typing import List, Optional, Callable
+from typing import List, Optional, Callable, Tuple
 
 from src.config.Env import LogLevel
 from src.config.Env import instance as env
@@ -52,6 +52,18 @@ def _filter_device_node_from_xinput_device_properties(properties: List[str]) -> 
     return None
 
 
+def _parse_device_from_listing(line: str) -> Optional[Tuple[str, str, DeviceTypeName]]:
+    re_match = re.match("(.*)id:\\s*(\\d*)\\s*type:\\s*(\\w*)\\s*.*", line)
+    if re_match is not None:
+        dev_name = re.sub(r"\s+", " ", re_match.group(1).strip())
+        dev_id = re_match.group(2)
+        dev_type_str = re_match.group(3)
+        dev_type = DeviceTypeName(dev_type_str) if dev_type_str in [item.name for item in DeviceTypeName] else None
+        return None if dev_type is None else (dev_name, dev_id, dev_type)
+    else:
+        return None
+
+
 def get_devices_info(device_hint_expr: str = ".*",
                      device_types: Optional[List[DeviceTypeName]] = None,
                      reset_device_and_read_input_area: bool = False,
@@ -78,9 +90,9 @@ def get_devices_info(device_hint_expr: str = ".*",
 
     devices_info: List[DeviceInfo] = []
     for line_with_id in xsetwacom_devices:
-        re_match = re.match("(.*)id:\\s*(\\d*)\\s*type:\\s*(\\w*)\\s*.*", line_with_id)
-        if re_match is not None:
-            dev_name, dev_id, dev_type = re.sub(r"\s+", " ", re_match.group(1).strip()), re_match.group(2), DeviceTypeName(re_match.group(3))
+        parsed = _parse_device_from_listing(line_with_id)
+        if parsed is not None:
+            dev_name, dev_id, dev_type = parsed
             if dev_type in requested_device_types or DeviceTypeName.ANY in requested_device_types:
                 logical_name = _filter_device_node_from_xinput_device_properties(_get_xinput_device_properties(dev_id))
                 intensities = led_intensity_reader(logical_name) if led_intensity_reader is not None else []
