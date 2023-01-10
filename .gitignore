@@ -6,3 +6,4 @@
 !./tmp/.keep
 
 **/*.kra-autosave.kra
+**/*.kra~
