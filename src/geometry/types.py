@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 
 class Geometry:
@@ -38,8 +38,8 @@ class Geometry:
         return self
 
     @property
-    def width_to_height_ratio(self) -> float:
-        return self.width_px / self.height_px
+    def width_to_height_ratio(self) -> Optional[float]:
+        return None if self.height_px <= 0.0 else self.width_px / self.height_px
 
     @property
     def width_displacement_signed_str(self) -> str:
