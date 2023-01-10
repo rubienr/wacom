@@ -18,9 +18,6 @@ on:
       - "!.github/workflows/**.yaml"
       - ".github/workflows/unit-tests.yaml"
 
-env:
-  PYTHONPATH: $GITHUB_WORKSPACE
-
 jobs:
   unit-tests:
     name: Pytest on ${{ matrix.os }}
@@ -52,6 +49,7 @@ jobs:
 
       - name: Running tests
         run: |
+          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
           pwd
           pytest-3
 
