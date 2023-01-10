@@ -30,13 +30,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install Python 3.10.x
+      - name: Install Python 3.10.7
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.10.7'
 
       - name: Install Prerequisites
-        run: sudo apt --yes install python3-pytest pylint
+        run: |
+          sudo apt --yes install python3-pytest pylint
+          sudo apt --yes install --only-upgrade python3-pytest pylint
 
       - name: versions
         run: |
@@ -47,6 +49,8 @@ jobs:
         run: |
           cd test
           pytest-3
+          echo "Pylint:"
+          pylint --version
 
       - name: Pylint - configs
         if: success() || failure()
@@ -54,7 +58,7 @@ jobs:
           cd configs
           pylint --rcfile .pylintrc *
 
-      - name: Pylint
+      - name: Pylint - src
         if: success() || failure()
         run: pylint --rcfile .pylintrc *
 
