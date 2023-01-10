@@ -16,7 +16,6 @@ def wrapped_function_b(arg_a: bool) -> bool:
 
 
 class SomeObject:
-
     some_var: int = 1
 
     @run_once

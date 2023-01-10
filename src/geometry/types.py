@@ -66,7 +66,7 @@ class Geometry:
 
 
 class Point:
-    def __init__(self, x: int = 0, y: int = 0) -> None: # pylint: disable=invalid-name
+    def __init__(self, x: int = 0, y: int = 0) -> None:  # pylint: disable=invalid-name
         self.x: int = x  # pylint: disable=invalid-name
         self.y: int = y  # pylint: disable=invalid-name
 
