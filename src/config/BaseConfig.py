@@ -1,16 +1,17 @@
 import os
-from typing import Dict, Any, Tuple
+from typing import Dict
 
 from src.config.DeviceParameters import DeviceParameters
-from src.config.Modes import Mode
-from src.geometry.types import InputArea, Point
+from src.config.Mode import Mode
+from src.geometry.types import InputArea
+from src.utils.object_dump import object_dump
 from src.wacom.DeviceTypeName import DeviceTypeName
 
 CONFIG_FILE_MODULE_SUFFIX: str = "_config"
 PY_CONFIG_FILE_SUFFIX: str = f"{CONFIG_FILE_MODULE_SUFFIX}.py"
 
 
-class BaseConfig(object):
+class BaseConfig:
     """
     Base class each configuration profile must derive from.
     """
@@ -18,26 +19,34 @@ class BaseConfig(object):
     def __init__(self, file_path_name: str = __file__) -> None:
         self.device_hint_expression: str = ""
         """
-        - i.e. regex r"^Wacom Intuos Pro .*", 
+        - i.e. regex r"^Wacom Intuos Pro .*",
         - shall match the device as accurate as possible
         - see `xsetwacom --list devices`
         """
         self.file_path_name: str = file_path_name
-        self.device_input_area: InputArea = InputArea(Point(), Point())
+        self.device_input_areas: Dict[DeviceTypeName, InputArea] = {}
+        """
+        Typical devices with input area are stylus, eraser and touch.
+        Stylus and eraser mostly share same resolution where the touch input usually has lower resolution.
+
+        See::
+            xsetwacom list devices
+            xsetwacom --set <id> ResetArea
+            xsetwacom --get <id> Area
+        """
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {}
         self.modes: Dict[str, Mode] = {}
         """
         additional LED independent modes can be defined here, i.e.
         - devices without touch ring LEDs have no modes: this can simulate multiple modes
-        - devices with touch: quicly switch touch on/off
+        - devices with touch: toggle touch on/off
         """
         self.xbindkeys_config_string = ""
         """
-        Example:
-        
-        .. code-block:: bash 
+        Example::
+
            # bind button 12 to toggle screens
-           "./xsetwacom.py --config <config_name> device --map next_fit"
+           "./xsetwacom.py --config <config_name> device --map keep"
            b:12
 
            # bind the wheel button to toggle in-between wheel modes
@@ -45,34 +54,8 @@ class BaseConfig(object):
            b:10
         """
 
-    def print_config(self, indent_level: int = 0, indent_spaces: int = 2) -> None:
-        BaseConfig._print_dict(
-            {"device_hint": self.device_hint_expression,
-             "devices_input_area": self.device_input_area.to_dict(),
-             "devices_parameters": self.devices_parameters,
-             "xbindkeys": self.xbindkeys_config_string,
-             }, indent_level=indent_level, indent_spaces=indent_spaces)
-
-    @staticmethod
-    def _print_dict(container: Dict[str, Any], indent_level: int = 0, indent_spaces: int = 2) -> None:
-        indent = " " * indent_level * indent_spaces
-        for key, value in container.items():
-            if isinstance(value, str) or isinstance(value, int):
-                print(f"{indent}{key}: {value}")
-            elif isinstance(value, Tuple):
-                print(f"{indent}{key}: {value[0]} ({value[1]})")
-            elif callable(value):
-                evaluated = value()
-                print(f"{indent}{key}: {evaluated[0]} ({evaluated[1]})")
-            elif isinstance(value, dict):
-                print(f"{indent}{key}:")
-                BaseConfig._print_dict(container[key], indent_level=indent_level + 1, indent_spaces=indent_spaces)
-            elif isinstance(value, DeviceParameters):
-                print(f"{indent}{key}:")
-                BaseConfig._print_dict(container[key].args, indent_level=indent_level + 1, indent_spaces=indent_spaces)
-            else:
-                print(f"unexpected config value type: {type(value)}")
-                assert False
+    def print_config(self, prefix: str = "", indent: str = "  ", level: int = 0) -> None:
+        print(object_dump(self, prefix, indent, level))
 
     @staticmethod
     def config_name_from_abs_filepath(file_path_with_py_extension: str) -> str:

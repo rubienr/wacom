@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 
-class LedsState(object):
+class LedsState:
 
     def __init__(self, intensities: List[int]) -> None:
         self.intensities: List[int] = intensities
@@ -14,6 +14,7 @@ class LedsState(object):
 
     def active_led_number(self, default_on_error: int = 99) -> int:
         """
+        :param default_on_error: default return value on error
         :return: number of first touch-ring LED found to be on, -1 otherwise
         """
         for led_nr, is_on in self.on_off_states().items():

@@ -4,8 +4,8 @@ from typing import Dict, Tuple, Union, Type
 
 from src.config.BaseConfig import BaseConfig
 from src.config.BaseConfig import DeviceParameters
-from src.config.Env import Env
-from src.config.Modes import Mode
+from src.config.Env import instance as env
+from src.config.Mode import Mode
 from src.geometry.types import Point, InputArea
 from src.wacom.DeviceTypeName import DeviceTypeName
 from src.wacom.dummy_leds import get_active_dummy_led_number, toggle_next_dummy_led
@@ -27,7 +27,11 @@ class Config(BaseConfig):
     def __init__(self) -> None:
         super().__init__(file_path_name=__file__)
         self.device_hint_expression: str = r"^Wacom Cintiq 22HD(T)? .*"
-        self.device_input_area: InputArea = InputArea(Point(0, 0), Point(95440, 53860))
+        self.device_input_areas: Dict[DeviceTypeName, InputArea] = {
+            DeviceTypeName.STYLUS: InputArea(Point(0, 0), Point(95440, 53860)),
+            DeviceTypeName.ERASER: InputArea(Point(0, 0), Point(95440, 53860)),
+            DeviceTypeName.TOUCH: InputArea(Point(0, 0), Point(4752, 2673))
+        }
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {
             DeviceTypeName.PAD:
                 DeviceParameters({
@@ -89,21 +93,21 @@ class Config(BaseConfig):
 
         self.xbindkeys_config_string = f"""
 # bind button 22 to toggle screens/geometry
-"{os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --map"
+"{os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), "xsetwacom.py")} --log DEBUG --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --map keep"
 b:22
 
 # bind button 21 to trigger a complete re-configuration of the pad
-"{os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set"
+"{os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), "xsetwacom.py")} --log DEBUG --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set"
 b:21
 
 # mode switch
-"{os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} mode --toggle Touch &&\
- {os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set"
+"{os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), "xsetwacom.py")} --log DEBUG --config {BaseConfig.config_name_from_abs_filepath(__file__)} mode --toggle Touch &&\
+ {os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), "xsetwacom.py")} --log DEBUG --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set"
 b:14
 """
 
 
-class ConfigHelper(object):
+class ConfigHelper:
 
     @staticmethod
     def get_active_mode(mode_enum: Union[Type[DummyTouchRingMode], Type[TouchMode]]) -> Union[DummyTouchRingMode, TouchMode]:
@@ -117,7 +121,7 @@ class ConfigHelper(object):
         :param mode_enum: the enum type for witch the current mode shall be retrieved
         :return: the current mode
         """
-        path = Env().tmp_files_abs_path
+        path = env.tmp_files_abs_path
         config_name = BaseConfig.config_name_from_abs_filepath(__file__)
         return mode_enum(
             get_active_dummy_led_number(path, f"{config_name}-{mode_enum.__name__}.mode", max_item=len(mode_enum) - 2, default_on_error=int(mode_enum.UNDEFINED.value), item_name=mode_enum.__name__))
@@ -133,7 +137,7 @@ class ConfigHelper(object):
 
         :param mode_enum: the enum type for which the next mode shall be cycled to
         """
-        path = Env().tmp_files_abs_path
+        path = env.tmp_files_abs_path
         config_name = BaseConfig.config_name_from_abs_filepath(__file__)
         toggle_next_dummy_led(path, f"{config_name}-{mode_enum.__name__}.mode", max_item=len(mode_enum) - 2)
 

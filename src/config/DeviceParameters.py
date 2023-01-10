@@ -5,14 +5,14 @@ CONFIG_FILE_MODULE_SUFFIX: str = "_config"
 PY_CONFIG_FILE_SUFFIX: str = f"{CONFIG_FILE_MODULE_SUFFIX}.py"
 
 
-class DeviceParameters(object):
+class DeviceParameters:
     def __init__(self,
                  args: Dict[str,  # parameter
                             Union[
                                 Tuple[str, str],  # value, description text
                                 Callable[[], Tuple[str, str]]  # call-able -> value, description text
                             ]]) -> None:
-        self.known_args: Dict[str, str] = {
+        self._known_args: Dict[str, str] = {
             # Allowed parameter (`xsetwacom --list parameters`):
             "Area": "Valid tablet area in device coordinates.",
             r"Button [\d]+": "X11 event to which the given button should be mapped.",
@@ -63,6 +63,6 @@ class DeviceParameters(object):
     @args.setter
     def args(self, value: Dict[str, Union[Tuple[str, str], Callable[[], Tuple[str, str]]]]) -> None:
         for arg in value.keys():
-            if not any([re.match(known_arg, arg) for known_arg in self.known_args.keys()]):
-                print(f"WARNING: unknown argument '{arg}' detected")
+            if not any([re.match(known_arg, arg) for known_arg in self._known_args.keys()]):
+                print(f"WARNING: unknown argument '{arg}' detected, see: xsetwacom --list parameters")
         self._args = value

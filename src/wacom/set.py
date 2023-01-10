@@ -2,6 +2,8 @@ import difflib
 from typing import List, Tuple
 
 from src.config.BaseConfig import BaseConfig, DeviceParameters
+from src.config.Env import LogLevel
+from src.config.Env import instance as env
 from src.utils.subprocess import run_subprocess
 from src.wacom.DeviceTypeName import DeviceTypeName
 from src.wacom.get import get_device_id, get_all_device_parameters, print_devices
@@ -15,7 +17,8 @@ def print_diff(old_args: List[List[str]], new_args: List[List[str]]) -> None:
 
 
 def set_device_parameter(device_id: str, parameter_name: str, parameter_value: str) -> None:
-    run_subprocess(f"xsetwacom --set {device_id.strip()} {parameter_name.strip()} {parameter_value.strip()}", check=True)
+    verbose = env.verbosity == LogLevel.DEBUG
+    run_subprocess(f"xsetwacom --set {device_id.strip()} {parameter_name.strip()} {parameter_value.strip()}", verbose=verbose, check=True)
 
 
 def set_device_parameters(device_id: str, parameters: DeviceParameters) -> None:

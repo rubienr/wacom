@@ -15,21 +15,20 @@ class TouchRingMode(Enum):
     UNDEFINED = 99
 
 
-"""
-Notes:
-  - if multiple remotes are connected to one dongle then `xsetwacom list` reports multiple "Express Key Remote Pad" devices too
-  - to unpair
-    ```bash
-    find /sys/devices -regex ".*unpair_remote.*"
-    /sys/devices/pci0000:00/0000:00:00.1/0000:01:00.1/usb1/5-2/5-2.1/1-2.1:1.0/0001:001:0001.0001/wacom_remote/unpair_remote
-    cd /sys/devices/pci0000:00/.../wacom_remote/
-    sudo su
-    echo "*" > unpair_remote 
-    ``` 
-"""
-
-
 class Config(BaseConfig):
+    """
+    Notes:
+      - if multiple remotes are connected to one dongle then `xsetwacom list` reports multiple "Express Key Remote Pad" devices even if not physically connected
+      - to unpair
+        ```bash
+        find /sys/devices -regex ".*unpair_remote.*"
+        /sys/devices/pci0000:00/0000:00:00.1/0000:01:00.1/usb1/5-2/5-2.1/1-2.1:1.0/0001:001:0001.0001/wacom_remote/unpair_remote
+        cd /sys/devices/pci0000:00/.../wacom_remote/
+        sudo su
+        echo "*" > unpair_remote
+        ```
+    """
+
     def __init__(self) -> None:
         super().__init__(file_path_name=__file__)
         self.device_hint_expression: str = r"^Wacom Express Key Remote Pad .*"
@@ -75,12 +74,12 @@ class Config(BaseConfig):
 
         self.xbindkeys_config_string = f"""
 # bind button "23" to trigger a complete re-configuration of the pad depending on the LEDs state
-"{os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), 'xsetwacom.py')} --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set"
+"{os.path.join(BaseConfig.root_path_from_abs_filepath(__file__), "xsetwacom.py")} --log DEBUG --config {BaseConfig.config_name_from_abs_filepath(__file__)} device --set"
 b:23
 """
 
 
-class ConfigHelper(object):
+class ConfigHelper:
 
     @staticmethod
     def get_abs_wheel_up_mode(device_hint_expression: str) -> Tuple[str, str]:

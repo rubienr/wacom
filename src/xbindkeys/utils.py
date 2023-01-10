@@ -1,11 +1,14 @@
 import os.path
 import subprocess
 
+from src.config.Env import LogLevel
+from src.config.Env import instance as env
 from src.utils.subprocess import run_subprocess
 
 
 def _run_subprocess(args: str, **kwargs) -> subprocess.CompletedProcess:
-    return run_subprocess(args, stdout=None, stderr=None, shell=True, text=True, **kwargs)
+    verbose = env.verbosity == LogLevel.DEBUG
+    return run_subprocess(args, stdout=None, stderr=None, shell=True, text=True, verbose=verbose, **kwargs)
 
 
 def xbindkeys_start(config: str, temp_path: str, config_file_name: str, config_file_suffix: str = ".xbindkeys-cfg", run_in_background: bool = False) -> None:

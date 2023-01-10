@@ -5,14 +5,14 @@ from typing import List, Optional
 from src.config.BaseConfig import BaseConfig, PY_CONFIG_FILE_SUFFIX, CONFIG_FILE_MODULE_SUFFIX
 
 
-class ConfigName(object):
+class ConfigName:
     def __init__(self, base_path: str, file_name: str) -> None:
         self.config_name: str = file_name.removesuffix(PY_CONFIG_FILE_SUFFIX)
         self.base_path: str = base_path
         self.file_name: str = file_name
 
 
-class ConfigLoader(object):
+class ConfigLoader:
     """
     Class to load configuration from file.
     """

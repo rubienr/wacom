@@ -1,5 +1,6 @@
 from typing import List
 
+from src.config.Env import instance as env, LogLevel
 from src.utils.subprocess import lines_from_stream, run_subprocess
 
 
@@ -26,12 +27,13 @@ def read_leds_brightness(logical_name: str) -> List[int]:
 
     file_path = f"/sys/class/input/{logical_name}/device/*/brightness"
 
-    files = lines_from_stream(run_subprocess(f"ls {file_path}").stdout)
+    verbose = env.verbosity == LogLevel.DEBUG
+    files = lines_from_stream(run_subprocess(f"ls {file_path}", verbose=verbose).stdout)
     if 0 < len(files):
         print(f"extracting LED status of input device '{logical_name}' from:")
         for file in files:
             print(f" - {file}")
-        intensities = [int(intensity) for intensity in lines_from_stream(run_subprocess(f"cat {file_path}").stdout)]
+        intensities = [int(intensity) for intensity in lines_from_stream(run_subprocess(f"cat {file_path}", verbose=verbose).stdout)]
         print(f" => intensities={intensities}")
         return intensities
     else:
