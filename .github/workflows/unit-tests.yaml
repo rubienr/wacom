@@ -49,8 +49,9 @@ jobs:
 
       - name: Running tests
         run: |
-          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-          echo "PYTHONPATH: $PYTHONPATH"
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          export PYTHONPATH=`pwd`
+          pwd
           ls -lah
           pytest-3
 
