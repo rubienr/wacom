@@ -36,8 +36,9 @@ In doubt apply the do-not-harm principle: stick to the same pattern as the major
 # Quality
 
 - Your changes shall not produce new warnings.
-- If you can fix old warnings please do so.
+- If you can fix old warnings please do so (run `pylint *` from the root directory).
 - Perform a self-review, comment code in public interface and in hard-to-understand areas.
+- Write tests for new code.
 - Use Python 3, write docstring and write type hinting:
   - docstring for public methods and functions
   - type hinting: at least for public methods and functions

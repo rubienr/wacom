@@ -49,7 +49,10 @@ $ ./xsetwacom.py --config <your_config> device --set
 
 ```bash
 $ ./xsetwacom.py --help
-usage: xsetwacom.py [-h] [-c {krita_intuos_pro}] {device,bindkeys,config,plot} ...
+usage: xsetwacom.py [-h]
+                    [-c {krita_intuos_bt,blender_sculpting_intuos_pro,krita_intuos_pro,mypaint_intuos_bt}]
+                    [-l {INFO,DEBUG}]
+                    {device,bindkeys,mode,config,plot} ...
 
 options:
   -h, --help            show this help message and exit
@@ -57,28 +60,38 @@ options:
 command (required):
   Run command with the loaded configuration.
 
-  {device,bindkeys,config,plot}
+  {device,bindkeys,mode,config,plot}
     device              detect devices; set and get device parameter
     bindkeys            bind device-key events to system mouse/keyboard events
+    mode                manipulate device modes, i.e. for devices without LED indicators
     config              print known configurations or configuration values
     plot                Visualize pressure curve or current pressure.
 
 Configuration:
   Load and provide the configuration to the command.
 
-  -c {krita_intuos_pro}, --config {krita_intuos_pro}
+  -c {gimp_intuos_bt,krita_cintiq_22hdt,krita_intuos_bt,blender_sculpting_intuos_pro,krita_express_key_remote_pad,krita_intuos_pro,mypaint_intuos_bt,blender_2d_animation_intuos_pro}, --config {gimp_intuos_bt,krita_cintiq_22hdt,krita_intuos_bt,blender_sculpting_intuos_pro,krita_express_key_remote_pad,krita_intuos_pro,mypaint_intuos_bt,blender_2d_animation_intuos_pro}
                         Loads the given configuration by name. (default: krita_intuos_pro)
+
+Logging:
+  Manipulate the verbosity level.
+
+  -l {INFO,DEBUG}, --log {INFO,DEBUG}
+                        Set the logging level: lesser logs INFO, verbose DEBUG. (default: INFO)
 ```
 
 ## Requirements
 
-| Dependency  | Mandatory | Description                                                  | 
-|-------------|-----------|--------------------------------------------------------------|
-| Python 3    | mandatory | -                                                            |
-| `xsetwacom` | mandatory | detect devices; read/write device parameters                 |
-| `xrandr`    | optional  | to compute geometry and clipping (keep `width:height` ratio) |
-| `xbindkeys` | optional  | only needed if commands shall be triggered on button press   |
-| `xinput`    | optional  | to retrieve LED status: determine input device ID            |
+| Dependency           | Mandatory             | Description                                                  | 
+|----------------------|-----------------------|--------------------------------------------------------------|
+| Python 3.10.x        | mandatory             | -                                                            |
+| `xsetwacom`          | mandatory             | detect devices; read/write device parameters                 |
+| `xrandr`             | optional, recommended | to compute geometry and clipping (keep `width:height` ratio) |
+| `xbindkeys`          | optional              | only needed if commands shall be triggered on button press   |
+| `xinput`             | optional              | to retrieve LED status: determine input device ID            |
+| `killall` `ls` `cat` | optional              | retrieve LED device intensities                              |
+| `pytest`             | optional              | for development                                              |
+| `pylint`             | optional              | for development                                              |
 
 ## Aims and Non Aims
 

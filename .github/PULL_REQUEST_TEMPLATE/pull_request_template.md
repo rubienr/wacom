@@ -1,20 +1,28 @@
-<!-- Please do not create a pull request without creating an issue first. -->
-<!-- You can skip this if you're fixing a typo. -->
+<!--
+Please do not create a pull request without creating an issue first.
+You can skip this if you are fixing a typo.
 
-<!-- tick off passed steps by [x] -->
-<!-- mark failed steps with   [!] -->
-<!-- mark steps not run with  [--] -->
+Remove sections that do not apply.
+Don't feel too restricted by this template but stick to it as much you can.
 
+tick off passed steps by [x]
+mark failed steps with   [!]
+mark steps not run with  [--] 
+-->
 
 **Description**
-TODO
-<!-- Please include a summary of the change and which issue(s) it fixes (use `closes #XXXX`) -->
-<!-- Please include relevant motivation and context. -->
-<!-- List any dependencies that are required for this change. -->
 
+<!-- 
+Include a summary of the change and which issue(s) it fixes (use `closes #XXXX`)
+Include relevant motivation and context.
+List any dependencies that are required for this change.
+-->
 
 **Type of change**
-<!-- Please delete options that are not applicable. -->
+
+<!-- 
+Delete options that are not applicable.
+-->
 - cleanup or refactoring (non-breaking change)
 - bug fix (non-breaking change which fixes an issue)
 - new feature (non-breaking change which adds functionality)
@@ -22,6 +30,7 @@ TODO
 - this change requires a documentation update
 
 **Checklist**
+
 - [ ] I have installed the pre-commit hook or at least run it manually: `pre-commit install` or `pre-commit run --all-files` <!-- note: `pre-commit install` enables pre-commit hook just for upcoming commits -->
 - [ ] my code follows the style guidelines of this project
   - [ ] my code is Python 3

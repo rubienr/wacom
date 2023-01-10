@@ -7,9 +7,9 @@ assignees: rubienr
 
 ---
 
-<!-- 
+<!--
 Remove sections that do not apply. 
-Don't feel too restricted by this template but stick to it as far you can.
+Don't feel too restricted by this template but stick to it as much you can.
 -->
 
 **Describe the bug**
@@ -40,17 +40,17 @@ Example:
 
 <!--
 A clear and concise description of what you expected to happen.
-Example: 
+Example:
 The pointer should be always below my finger where I touched the screen.
 -->
 
 **Files**
 
 <!--
-If applicable, add screenshots or logs to help explain your problem.
+Add your configuration, logs, screenshots, hand drawings etc. to help explain your problem.
 -->
 
-**Versions (please complete the following information):**
+**Versions (please complete the following information)**
 
 <!--
 Example script:
@@ -59,7 +59,7 @@ lsb_release -a
 echo -en "xsetwacom: " && xsetwacom --version
 xinput --version
 xrandr --version
-python --version 
+python --version
 ```
 
 Example output to post here:
