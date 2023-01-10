@@ -19,7 +19,7 @@ on:
       - ".github/workflows/unit-tests.yaml"
 
 env:
-  PYTHONPATH: `pwd`
+  PYTHONPATH: ${{ GITHUB_WORKSPACE }}
 
 jobs:
   unit-tests:
