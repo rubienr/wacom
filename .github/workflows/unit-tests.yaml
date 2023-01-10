@@ -37,8 +37,8 @@ jobs:
 
       - name: Install Prerequisites
         run: |
-          sudo apt --yes install python3-pytest pylint
-          sudo apt --yes install --only-upgrade python3-pytest pylint
+          sudo apt --yes install                python3-pytest pylint python3-future
+          sudo apt --yes install --only-upgrade python3-pytest pylint python3-future
 
       - name: Versions
         run: |
@@ -49,10 +49,7 @@ jobs:
 
       - name: Running tests
         run: |
-          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           export PYTHONPATH=`pwd`
-          pwd
-          ls -lah
           pytest-3
 
       - name: Pylint - configs
