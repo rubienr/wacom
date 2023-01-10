@@ -30,27 +30,33 @@ class Config(BaseConfig):
             DeviceTypeName.PAD:
                 DeviceParameters({
                     "Mode": ("Absolute", "absolute mode pointer device"),
+
                     # ↓ top button
                     "Button 1": ("key +ctrl z", "undo"),
                     "Button 2": ("key shift", "Shift"),
                     "Button 3": ("key ctrl", "Control"),
                     "Button 8": ("key +ctrl +alt 1", "swap with last tool"),
                     # ↑ 4th button
+
                     # ↓ touch ring button
                     "Button 13": ("button 13", "toggle modes"),  # leave default in order to work with xbindkeys without prior configuration by `xsetwacom --config <cfg> configure device --set`
+
                     # ↓ 5th button
                     "Button 9": ("key e", "toggle brush mode: normal/erase"),
                     "Button 10": ("key KP_1 +shift c key", "reset zoom + rotation"),
                     "Button 11": ("key q", "quick favourites"),
                     "Button 12": ("button 12", "map to next screen"),  # leave default in order to work with xbindkeys without prior configuration by `xsetwacom --config <cfg> configure device --set`
                     # ↑ bottom button
+
                     "AbsWheelUp": lambda: ConfigHelper.get_abs_wheel_up_mode(self.device_hint_expression),  # call-able retrieving the corresponding mode according to the touch-ring LED state
                     "AbsWheelDown": lambda: ConfigHelper.get_abs_wheel_down_mode(self.device_hint_expression),  # call-able retrieving the corresponding mode according to the touch-ring LED state
                 }),
             DeviceTypeName.STYLUS: DeviceParameters({
+                "Mode": ("Absolute", "absolute mode pointer device"),
                 "PressureCurve": ("70 0 70 100", "stylus pressure curve"),
             }),
             DeviceTypeName.ERASER: DeviceParameters({
+                "Mode": ("Absolute", "absolute mode pointer device"),
                 "PressureCurve": ("0 0 50 70", "eraser pressure curve"),
             }),
         }

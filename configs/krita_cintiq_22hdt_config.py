@@ -55,7 +55,7 @@ class Config(BaseConfig):
                     "Button 15": ("button 15", "-"),
                     "Button 16": ("button 16", "-"),
                     "Button 17": ("button 17", "-"),
-                    "Button 18": ("button 18", "reset tool"),
+                    "Button 18": ("button 18", "-"),
 
                     "Button 14": ("button 14", "-"),  # center button: trigger mode switch (dummy LED) by xbindkeys
 
@@ -73,14 +73,17 @@ class Config(BaseConfig):
                 }),
             DeviceTypeName.STYLUS:
                 DeviceParameters({
+                    "Mode": ("Absolute", "absolute mode pointer device"),
                     "PressureCurve": ("0 0 100 100", "stylus pressure curve"),
                 }),
             DeviceTypeName.ERASER:
                 DeviceParameters({
+                    "Mode": ("Absolute", "absolute mode pointer device"),
                     "PressureCurve": ("0 0 100 100", "eraser pressure curve"),
                 }),
             DeviceTypeName.TOUCH:
                 DeviceParameters({
+                    "Mode": ("Absolute", "absolute mode pointer device"),
                     "Touch": ConfigHelper.get_touch_mode,
                 }),
         }

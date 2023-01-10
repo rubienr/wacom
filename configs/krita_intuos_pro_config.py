@@ -49,11 +49,17 @@ class Config(BaseConfig):
                 }),
             DeviceTypeName.STYLUS:
                 DeviceParameters({
+                    "Mode": ("Absolute", "absolute mode pointer device"),
                     "PressureCurve": ("70 0 70 100", "stylus pressure curve"),
                 }),
             DeviceTypeName.ERASER:
                 DeviceParameters({
+                    "Mode": ("Absolute", "absolute mode pointer device"),
                     "PressureCurve": ("0 0 50 70", "eraser pressure curve"),
+                }),
+            DeviceTypeName.TOUCH:
+                DeviceParameters({
+                    "Mode": ("Absolute", "absolute mode pointer device")
                 }),
         }
 

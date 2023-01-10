@@ -16,6 +16,7 @@ class Config(BaseConfig):
             DeviceTypeName.PAD:
                 DeviceParameters({
                     "Mode": ("Absolute", "absolute mode pointer device"),
+
                     # ↓ top button
                     "Button 1": ("button 0", "<button 1 not defined>"),
                     "Button 2": ("button 0", "<button 2 not defined>"),
@@ -23,9 +24,11 @@ class Config(BaseConfig):
                     "Button 8": ("button 8", "set all parameters and map to next screen"),
                 }),
             DeviceTypeName.STYLUS: DeviceParameters({
+                "Mode": ("Absolute", "absolute mode pointer device"),
                 "PressureCurve": ("70 0 70 100", "stylus pressure curve"),
             }),
             DeviceTypeName.ERASER: DeviceParameters({
+                "Mode": ("Absolute", "absolute mode pointer device"),
                 "PressureCurve": ("0 0 50 70", "eraser pressure curve"),
             }),
         }

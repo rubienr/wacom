@@ -68,7 +68,6 @@ class Config(BaseConfig):
                     "Button 19": ("button 19", "-"),
                     "Button 22": ("button 22", "-"),
                     # ↑ bottom, right outer row
-
                 }),
         }
 
