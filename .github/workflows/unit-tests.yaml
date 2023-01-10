@@ -18,13 +18,16 @@ on:
       - "!.github/workflows/**.yaml"
       - ".github/workflows/unit-tests.yaml"
 
+env:
+  PYTHONPATH=`pwd`
+
 jobs:
   unit-tests:
     name: Pytest on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-22.04, ubuntu-20.04 ]
+        os: [ ubuntu-22.04 ]
 
     steps:
       - name: Checkout repository
@@ -48,7 +51,9 @@ jobs:
           pylint --version
 
       - name: Running tests
-        run: pytest-3
+        run: |
+          pwd
+          pytest-3
 
       - name: Pylint - configs
         if: success() || failure()
