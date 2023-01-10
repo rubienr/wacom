@@ -50,7 +50,8 @@ jobs:
       - name: Running tests
         run: |
           echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-          pwd
+          echo "PYTHONPATH: $PYTHONPATH"
+          ls -lah
           pytest-3
 
       - name: Pylint - configs
