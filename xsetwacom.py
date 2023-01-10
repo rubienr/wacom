@@ -43,8 +43,7 @@ class Args:
 
         sup = sub_parsers.add_parser("bindkeys",
                                      help="bind device-key events to system mouse/keyboard events",
-                                     description="Xbindkeys will intercepts device-events and triggers system mouse/key events accordingly "
-                                                 "(see also 'man xbindkeys').")
+                                     description="Xbindkeys will intercepts device-events and triggers system mouse/key events accordingly (see also 'man xbindkeys').")
         grp = sup.add_mutually_exclusive_group()
         grp.add_argument("-s", "--start",
                          help="Start Xbindkeys and run in foreground (press CTRL+C to stop).",
@@ -61,17 +60,18 @@ class Args:
 
         sup = sub_parsers.add_parser("mode",
                                      help="manipulate device modes, i.e. for devices without LED indicators",
-                                     description="Toggle list or print modes' state. "
-                                                 "Modes are persistent in between runs; multiple modes are supported.")
+                                     description="Toggle list or print modes' state. Modes are persistent in between runs; multiple modes are supported.")
         grp = sup.add_mutually_exclusive_group()
         grp.add_argument("-t", "--toggle",
                          help="Toggle in between mode states: i.e. for devices without LEDs. Multiple modes are supported. "
-                              "The modes are persisted in between runs. For possible choices run with 'mode --list'.")
+                              "The modes are persisted in between runs. For possible choices run with 'mode --list'.",
+                         action="store_true")
         grp.add_argument("-l", "--list",
                          help="Lists all known modes for the given configuration.",
                          action="store_true")
         grp.add_argument("-p", "--print",
-                         help="Prints the current value of the requested mode.", )
+                         help="Prints the current value of the requested mode.",
+                         action="store_true")
 
         sub_group = self.parser.add_argument_group("Configuration",
                                                    description="Load and provide the configuration to the command.")
@@ -102,7 +102,7 @@ class Args:
 
         sup = sub_parsers.add_parser("plot",
                                      help="Visualize pressure curve or current pressure.",
-                                     description="Visualizes the pressure curve (static) or the current pressure (live).")
+                                     description="Visualize the pressure curve (static) or the current pressure (live).")
         grp = sup.add_mutually_exclusive_group()
         grp.add_argument("-c", "--curve",
                          help="Plot the configured pressure curve and the resulting Bezier curve (requires gnuplot).",
