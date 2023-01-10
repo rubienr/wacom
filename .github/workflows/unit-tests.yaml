@@ -36,17 +36,17 @@ jobs:
           python-version: '3.10'
 
       - name: Install Prerequisites
-        run: sudo apt install python3-pytest pylint
+        run: sudo apt --yes install python3-pytest pylint
 
       - name: versions
         run: |
           python --version
-          pytest --version
+          pytest-3 --version
 
       - name: Running tests
         run: |
           cd test
-          pytest
+          pytest-3
 
       - name: Pylint - configs
         if: success() || failure()
