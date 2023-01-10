@@ -64,14 +64,12 @@ class Args:
         grp = sup.add_mutually_exclusive_group()
         grp.add_argument("-t", "--toggle",
                          help="Toggle in between mode states: i.e. for devices without LEDs. Multiple modes are supported. "
-                              "The modes are persisted in between runs. For possible choices run with 'mode --list'.",
-                         action="store_true")
+                              "The modes are persisted in between runs. For possible choices run with 'mode --list'.")
         grp.add_argument("-l", "--list",
                          help="Lists all known modes for the given configuration.",
                          action="store_true")
         grp.add_argument("-p", "--print",
-                         help="Prints the current value of the requested mode.",
-                         action="store_true")
+                         help="Prints the current value of the requested mode.")
 
         sub_group = self.parser.add_argument_group("Configuration",
                                                    description="Load and provide the configuration to the command.")
