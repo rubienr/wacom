@@ -2,6 +2,7 @@ import os.path
 from enum import Enum
 from typing import Dict, Tuple
 
+from src.config import models
 from src.config.BaseConfig import BaseConfig
 from src.config.BaseConfig import DeviceParameters
 from src.wacom.DeviceTypeName import DeviceTypeName
@@ -31,7 +32,7 @@ class Config(BaseConfig):
 
     def __init__(self) -> None:
         super().__init__(file_path_name=__file__)
-        self.device_hint_expression: str = r"^Wacom Express Key Remote Pad .*"
+        self.device_hint_expression: str = models.WacomExpressKeyRemotePad.device_hint
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {
             DeviceTypeName.PAD:
                 DeviceParameters({

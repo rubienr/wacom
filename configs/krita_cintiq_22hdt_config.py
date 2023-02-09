@@ -2,6 +2,7 @@ import os.path
 from enum import Enum
 from typing import Dict, Tuple, Union, Type
 
+from src.config import models
 from src.config.BaseConfig import BaseConfig
 from src.config.BaseConfig import DeviceParameters
 from src.config.Env import instance as env
@@ -26,7 +27,7 @@ class TouchMode(Enum):
 class Config(BaseConfig):
     def __init__(self) -> None:
         super().__init__(file_path_name=__file__)
-        self.device_hint_expression: str = r"^Wacom Cintiq 22HD(T)? .*"
+        self.device_hint_expression: str = models.WacomCintiq22HDT.device_hint
         self.device_input_areas: Dict[DeviceTypeName, InputArea] = {
             DeviceTypeName.STYLUS: InputArea(Point(0, 0), Point(95440, 53860)),
             DeviceTypeName.ERASER: InputArea(Point(0, 0), Point(95440, 53860)),
@@ -57,7 +58,7 @@ class Config(BaseConfig):
                     "Button 17": ("button 17", "-"),
                     "Button 18": ("button 18", "-"),
 
-                    "Button 14": ("button 14", "-"),  # center button: trigger mode switch (dummy LED) by xbindkeys
+                    "Button 14": ("button 14", "trigger mode switch"),  # center button: trigger mode switch (dummy LED) by xbindkeys
 
                     "Button 19": ("button 19", "-"),
                     "Button 20": ("button 20", "-"),
@@ -65,7 +66,7 @@ class Config(BaseConfig):
                     "Button 22": ("button 22", "map to next screen"),  # leave default in order to work with xbindkeys without prior configuration by `xsetwacom --config <cfg> configure device --set`
                     # ↑ right row, bottom button
 
-                    # stripes on the backside behind buttons
+                    # touch sensitive stripes on the backside behind buttons
                     "StripLeftUp": ("key 6", "rotate right"),
                     "StripLeftDown": ("key 4", "rotate left"),
                     "StripRightUp": ("key plus", "zoom in"),

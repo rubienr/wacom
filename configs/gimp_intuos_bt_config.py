@@ -1,6 +1,7 @@
 import os
 from typing import Dict
 
+from src.config import models
 from src.config.BaseConfig import BaseConfig
 from src.config.BaseConfig import DeviceParameters
 from src.geometry.types import Point, InputArea
@@ -10,7 +11,7 @@ from src.wacom.DeviceTypeName import DeviceTypeName
 class Config(BaseConfig):
     def __init__(self) -> None:
         super().__init__(file_path_name=__file__)
-        self.device_hint_expression: str = r"^Wacom Inutos BT .*"
+        self.device_hint_expression: str = models.WacomIntuosBT.device_hint
         self.device_input_areas: Dict[DeviceTypeName, InputArea] = {DeviceTypeName.STYLUS: InputArea(Point(0, 0), Point(15200, 9500))}
         self.devices_parameters: Dict[DeviceTypeName, DeviceParameters] = {
             DeviceTypeName.PAD:

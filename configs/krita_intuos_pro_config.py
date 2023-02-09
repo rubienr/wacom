@@ -2,6 +2,7 @@ import os.path
 from enum import Enum
 from typing import Dict, Tuple
 
+from src.config import models
 from src.config.BaseConfig import BaseConfig
 from src.config.BaseConfig import DeviceParameters
 from src.geometry.types import Point, InputArea
@@ -20,7 +21,7 @@ class TouchRingMode(Enum):
 class Config(BaseConfig):
     def __init__(self) -> None:
         super().__init__(file_path_name=__file__)
-        self.device_hint_expression: str = r"^Wacom Intuos Pro .*"
+        self.device_hint_expression: str = models.WacomIntuosPro.device_hint
         self.device_input_areas: Dict[DeviceTypeName, InputArea] = {
             DeviceTypeName.STYLUS: InputArea(Point(0, 0), Point(62200, 43200)),
             DeviceTypeName.ERASER: InputArea(Point(0, 0), Point(62200, 43200)),
