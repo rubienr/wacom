@@ -1,8 +1,16 @@
 # Yet another Wacom Tool
 
-This tool allows a Wacom configuration beyond the limitations of the Wacom configuration UIs in KDE Plasma and Gnome 2/3 or similar.
+This tool allows a Wacom configuration beyond the limitations of the built-in configuration UIs of KDE Plasma, Gnome 2/3 or similar.
 
-It is based on `xsetwacom`, `XBindKeys`, `xinput` and `xrandr`.
+It is based on `xsetwacom`, `XBindKeys`, `xinput` and `xrandr`,
+doesn't depend on the desktop environment but requires X11 (no Wayland).
+
+**Sample configurations are available for:**
+- Express Key Remote Pad
+- Intuos BT
+- Intuos Pro
+- Cintiq 22HDT, Cintiq 22HD
+- Cintiq 21UX 
 
 **Noteworthy features:**
 
