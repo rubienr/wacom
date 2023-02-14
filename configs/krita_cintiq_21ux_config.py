@@ -40,8 +40,8 @@ class Config(BaseConfig):
                     # touch sensitive stripes
                     "StripLeftUp": ("key plus", "zoom in"),
                     "StripLeftDown": ("key minus", "zoom out"),
-                    "StripRightUp": ("key 6", "rotate right"),
-                    "StripRightDown": ("key 4", "rotate left"),
+                    "StripRightUp": ("key 4", "rotate left"),
+                    "StripRightDown": ("key 6", "rotate right"),
                 }),
             DeviceTypeName.STYLUS:
                 DeviceParameters({
