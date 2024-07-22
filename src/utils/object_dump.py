@@ -1,8 +1,6 @@
 from enum import Enum
 from typing import Any, Callable, Tuple, Set, List
 
-from future.types.newstr import unicode
-
 
 def get_public_class_members(obj: object) -> List[str]:
     """
@@ -42,7 +40,7 @@ def _object_dump(obj: Any, prefix: str, indent: str, level: int) -> str:
     elif isinstance(obj, (int, float)):
         return f"{obj}\n"
 
-    elif isinstance(obj, (str, unicode)):
+    elif isinstance(obj, (str)):
         return f"'{obj}'\n"
 
     elif isinstance(obj, (List, Set)):
