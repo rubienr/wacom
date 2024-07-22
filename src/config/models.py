@@ -32,3 +32,8 @@ class WacomCintiq21UX(WacomModel):
 class WacomIntuos3Ptz430(WacomModel):
     device_hint: str = r"^Wacom Intuos3 4x5 .*"
     device_note: str = "4\"x5\" USB Pad with STYLUS, ERASER, PAD and CURSOR device"
+
+
+class WacomIntuosProMediumPth651(WacomModel):
+    device_hint = r"^Wacom Intuos Pro M (Pen stylus|Pen eraser|Pen cursor|Pad pad|Finger touch).*"
+    device_note = "USB Pad with STYLUS, ERASER, CURSOR, PAD and TOUCH"
