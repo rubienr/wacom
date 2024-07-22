@@ -6,7 +6,7 @@ class Mode:
     Mode to getter/setter mapping.
     Required to support additional (LED independent) device modes:
       - devices without touch ring LEDs have no modes: this can simulate multiple modes
-      - devices with touch: quicly switch touch functionality on/off
+      - devices with touch: quickly switch touch functionality on/off
     """
 
     def __init__(self, name: str, getter: Callable[[], Any], setter: Callable[[], None]) -> None:
