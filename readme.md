@@ -8,9 +8,8 @@ doesn't depend on the desktop environment but requires X11 (no Wayland).
 **Sample configurations are available for:**
 - Express Key Remote Pad
 - Intuos BT
-- Intuos Pro
-- Cintiq 22HDT, Cintiq 22HD
-- Cintiq 21UX 
+- Intuos Pro: PTH-680, PTH-651
+- Cintiq: 21UX, 22HDT, 22HD
 
 **Noteworthy features:**
 
