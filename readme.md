@@ -1,24 +1,36 @@
 # Yet another Wacom Tool
 
-This tool allows a Wacom configuration beyond the limitations of the built-in configuration UIs of KDE Plasma, Gnome 2/3 or similar.
+This tool enables Wacom configuration beyond the limitation built-in configuration UIs of `KDE Plasma`, `Gnome 2/3` or similar.
+It is based on `xsetwacom`, `XBindKeys`, `xinput` and `xrandr`.
+It doesn't depend on a specific desktop environment but requires X11 (no Wayland).
 
-It is based on `xsetwacom`, `XBindKeys`, `xinput` and `xrandr`,
-doesn't depend on the desktop environment but requires X11 (no Wayland).
+At the time of writing this tool has no UI but covers the lack of fundamental features the built-in UIs cannot do:
+
+1. any button can change behaviour depending on the ring-button LED (or faked LED for devices that have none)
+2. button not only triggers hot-keys but can do also:
+   1. key sequences
+   2. scripts, commands
 
 **Sample configurations are available for:**
+
 - Express Key Remote Pad
-- Intuos BT
-- Intuos Pro: PTH-680, PTH-651
-- Cintiq: 21UX, 22HDT, 22HD
+- Cintiq
+  - 21UX
+  - 22HD
+  - 22HDT
+- Intuos
+  - BT
+  - Pro
+    - PTH-651
+    - PTH-680
 
 **Noteworthy features:**
 
 - cycle mapping in-between screens
 - auto adjust input area to preserve the `width:height` ratio on the display
-- modes: maps device button(s) (if any) according to the mode state
+- modes: maps device button(s) (if any) according to the mode
   - LED-dependent mode: read the device LEDs (if any)
-  - LED-independent mode(s): read mode state from persistence file
-    - supports multiple user defined modes, i.e.: toggle touch, switch button mapping, ...
+  - LED-independent mode(s): read mode state from persistence file (fake LED; user defined modes)
 - button events can be mapped to:
   - hot-keys (several keys pressed at once)
   - key sequence (i.e. reset zoom and rotation in Krita: first press `5`, then release `5`, then press `2`, then release `2`)
@@ -35,21 +47,29 @@ doesn't depend on the desktop environment but requires X11 (no Wayland).
 # In most cases, if the configuration is set up correctly, this is enough:
 $ ./xsetwacom.py --config <your_config> bindkeys --start
 # To initially configure the device press the wheel/mode button once.
+# Some devices/configs require pressing the cycle-screen button first (i.e. Intuos Pro PTH-651)
 
 # The script starts xbindkeys which in turn will react on button events and trigger actions, i.e:
 # - cycle screens and
-# - cycle button modes (wheel button or an arbitrary button; reads LED state).
+# - cycle ring-button modes (wheel button or any arbitrary button; reads LED or faked-LED state).
 
-# Note: if the device is disconnected and re-attached each button emits default events. 
-# For convenience, configurations are asked to react on the default events of
-# - the wheel/mode button and 
+# Note: if the device is disconnected and re-attached, all buttons emit default events again. 
+# For convenience, a configuration profiles shall (if possible) react on the default events of
+# - the wheel/mode button and/or 
 # - the screen-cycle button.
 ```
 
 ```bash
 # To initially configure a device:
 $ ./xsetwacom.py --config <your_config> device --set
-# If cycling through screens or cycling through button modes (i.e. wheel button) is not required this command is enough.
+
+# This is enough if the configuration is static: 
+# - key binding with ´xbindkeys` is not required 
+# - wheel LEDs/modes are irrelevant
+# - cycling through screens is not needed
+
+# This is required if your custom configuration does not trigger `xbindkeys` with the default button events.
+# - Usually the wheel-button and/or the screen-cycle button should trigger `xbindkeys`.
 ```
 
 ## Synopsis
@@ -91,7 +111,7 @@ Logging:
 
 | Dependency           | Mandatory             | Description                                                  | 
 |----------------------|-----------------------|--------------------------------------------------------------|
-| Python 3.10.x        | mandatory             | -                                                            |
+| Python >= 3.10       | mandatory             | -                                                            |
 | `xsetwacom`          | mandatory             | detect devices; read/write device parameters                 |
 | `xrandr`             | optional, recommended | to compute geometry and clipping (keep `width:height` ratio) |
 | `xbindkeys`          | optional              | only needed if commands shall be triggered on button press   |
@@ -105,7 +125,7 @@ Logging:
 ✓ simple to use \
 ✓ fast to apply once configuration is created \
 ✓ sophisticated configuration possible \
-✗ no GUI, only CLI
+✗ no GUI, ✓ CLI only
 
 ## Limitations
 
@@ -159,3 +179,11 @@ Device detected if connected by ...
     Wacom Intuos BT M Pen eraser            id: 17  type: ERASER
     Wacom Intuos BT M Pen cursor            id: 18  type: CURSOR
    ```
+
+## Intuos Pro PTH-651
+
+The default wheel-button id is 1 which clashes with the left mouse button (LMB).
+For this reason the wheel-button modes do not work until the button-id is remapped.
+In contrast to other configs the `PTH-651` configuration implicitly triggers a full pad configuration
+on any toggle-screen (bottom most) button event to enable wheel-button.
+Once this button is pressed, the wheel-button behaviour works as expected.
